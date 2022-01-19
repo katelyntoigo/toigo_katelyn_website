@@ -6,21 +6,21 @@
       "description": "Some additional details about the website",
       "author": [],
       "contents": "\n\n\n\n",
-      "last_modified": "2022-01-19T14:41:18-08:00"
+      "last_modified": "2022-01-19T14:55:22-08:00"
     },
     {
       "path": "blog.html",
       "title": "Blog",
       "author": [],
       "contents": "\n\n\n\n",
-      "last_modified": "2022-01-19T14:41:18-08:00"
+      "last_modified": "2022-01-19T14:55:22-08:00"
     },
     {
       "path": "index.html",
       "title": "Katelyn Toigo",
       "author": [],
       "contents": "\n\n          \n          \n          mfeo\n          \n          \n          Home\n          About\n          Blog\n          ☰\n          \n          \n      \n        \n          \n            \n              \n            \n              Katelyn Toigo\n            \n            \n              \n                \n                    \n                      \n                        LinkedIn\n                      \n                    \n                  \n                                    \n                    \n                      \n                        GitHub\n                      \n                    \n                  \n                                  \n            \n          \n        \n        \n        \n          \n            \n          \n        \n      \n    \n\n    \n      \n        \n          \n            \n              \n            \n              Katelyn Toigo\n            \n            \n              \n                \n                                    \n                    \n                      LinkedIn\n                    \n                  \n                                    \n                    \n                      GitHub\n                    \n                  \n                                  \n              \n            \n            \n              \n            \n        \n      \n    \n\n    \n    \n    ",
-      "last_modified": "2022-01-19T14:41:18-08:00"
+      "last_modified": "2022-01-19T14:55:22-08:00"
     }
   ],
   "collections": ["posts/posts.json"]
