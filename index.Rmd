@@ -1,8 +1,6 @@
 ---
 title: "Katelyn Toigo"
 image: "katelyn_toigo.jpg"
-description: |
-    Welcome to the website. I hope you enjoy it!
 links:
   - label: LinkedIn
     url: "www.linkedin.com/in/katelyn-toigo"
