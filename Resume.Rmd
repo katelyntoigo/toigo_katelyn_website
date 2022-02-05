@@ -1,0 +1,48 @@
+---
+title: "Resume"
+description: |
+  Details About Me
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Interests
+
+I am keenly interested in working with private landowners to restore and conserve their land and, ultimately, envision myself working for a land trust.
+
+In my free time, you will find me hiking, cooking, painting, visiting national parks, and spending as much time with my dog, Basil, as possible.
+
+
+
+## Education
+
+**University of California, Santa Barbara** | Santa Barbara, CA
+
+Master of Environmental Science and Management | September 2020 - June 2022
+
+**Southern Illinois University, Carbondale** | Carbondale, IL
+
+B.S. in Zoology & B.S. in Geography and Environmental Resources | August 2016 - May 2020
+
+
+
+## Experience & Projects
+
+**Conservation Connect Fellow** | National Forest Foundation | May 2021 - May 2022
+
+- Designed a business plan for the Southern Idaho Forest Fund
+- Conducted meetings with U.S. Forest Service personnel
+- Compiled internal and external reports about southern Idaho National Forests shared with the Washington D.C. U.S. Forest Service office
+- Took notes during meetings
+- Created a direct mail postcard which was sent to residents of the Wood River Valley
+- Assisted in a media tour and community engagement event
+- Wrote a blog post
+
+
+**Floodplain Restoration GLOBE Intern** | The Nature Conservancy | June 2019 - August 2019
+
+- Worked with the U.S. Fish and Wildlife Service and Illinois Natural History Survey.
+- Conducted a public use survey and wrote a final summary report.
+- Created seamless stewardship data maps using ArcGIS and Collector.

@@ -3,9 +3,11 @@ title: "Katelyn Toigo"
 image: "katelyn_toigo.jpg"
 links:
   - label: LinkedIn
-    url: "www.linkedin.com/in/katelyn-toigo"
+    url: "https://www.linkedin.com/in/katelyn-toigo"
   - label: GitHub
     url: "https://github.com/katelyntoigo"
+  - label: Email
+    url: "mailto:ktoigo@ucsb.edu"
 site: distill::distill_website
 output:
   postcards::trestles
@@ -22,3 +24,8 @@ knitr::opts_chunk$set(echo = FALSE)
 
 ```
 
+## Summary
+
+My determination to protect and restore biodiversity began as I grew up on an Illinois State Land and Water Reserve and traveled to national parks, refuges, and wilderness areas. While visiting Glacier National Park in 2008, I witnessed Ken Burns and his crew filming his national park documentary. When I viewed the film the next year, I was determined to make it to every U.S. national park. In June of 2016, a small Cessna landed on the sand dunes of Kobuk Valley National Park and my goal was achieved. 
+
+Earning a B.S. in Zoology and a B.S. in Geography and Environmental Resources from Southern Illinois University Carbondale laid the foundation to approach problems from both the perspective of societal needs and from the perspective of wildlife’s needs. Internships with The Nature Conservancy, the National Forest Foundation, Cypress Creek National Wildlife Refuge, and the National Great Rivers Research and Education Center enhanced skills in public education/outreach, collaboration, meeting facilitation, stewardship, and field methods. I am currently pursuing a Master of Environmental Science and Management degree at the University of California Santa Barbara Bren School, specializing in Conservation Planning.

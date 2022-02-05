@@ -1,19 +1,19 @@
 [
   {
     "path": "posts/2022-01-19-welcome/",
-    "title": "welcome",
-    "description": "A short description of the post.",
+    "title": "Welcome",
+    "description": "Welcome to my page.",
     "author": [
       {
         "name": "Katelyn Toigo",
         "url": {}
       }
     ],
-    "date": "2022-01-19",
+    "date": "2022-02-04",
     "categories": [],
-    "contents": "\nDistill is a publication format for scientific and technical writing, native to the web.\nLearn more about using Distill at https://rstudio.github.io/distill.\n\n\n\n",
+    "contents": "\nI am happy you are here!\n\n\n\n",
     "preview": {},
-    "last_modified": "2022-01-19T14:37:45-08:00",
-    "input_file": {}
+    "last_modified": "2022-02-04T22:47:39-08:00",
+    "input_file": "welcome.knit.md"
   }
 ]
