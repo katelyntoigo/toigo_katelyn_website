@@ -28,7 +28,7 @@ B.S. in Zoology & B.S. in Geography and Environmental Resources | August 2016 - 
 
 
 
-## Experience & Projects
+## Experience
 
 **Conservation Connect Fellow** | National Forest Foundation | May 2021 - May 2022
 
@@ -46,3 +46,10 @@ B.S. in Zoology & B.S. in Geography and Environmental Resources | August 2016 - 
 - Worked with the U.S. Fish and Wildlife Service and Illinois Natural History Survey.
 - Conducted a public use survey and wrote a final summary report.
 - Created seamless stewardship data maps using ArcGIS and Collector.
+
+
+## Projects
+
+**Poster Presented at the World Congress of Malacology** | August 2019
+
+- Effects of Strip Mine Reclamation Practices on Terrestrial Snail Communities
