@@ -8,4 +8,4 @@ description: |
 knitr::opts_chunk$set(echo = FALSE)
 ```
 
-On this site you will find information about me, projects I have worked on, and ways to contact me.
+On this site you will find information about me, projects I have worked on, and my blog. I hope you find what you are looking for!
