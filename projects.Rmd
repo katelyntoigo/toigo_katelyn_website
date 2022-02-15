@@ -1,0 +1,628 @@
+---
+title: "Projects"
+description: |
+  Projects Completed
+---
+
+## 1. Principal Components Analysis to Analyze Food Nutrients
+
+### Overview
+This script uses principal components analysis to analyze nutrient information for raw fruits and vegetables from the USDA National Nutrient Database (FoodDataCentral). Principal components analysis is an ordination method allowing us to understand as much about our multivariate data as possible in a simplified number of dimensions. Here, I'll use the `nutrients` data from the USDA to explore variable relationships and clustering. I will only use the measurements that are in grams (protein, fat, carbohydrates, sugar, fiber), and I will only look at restaurant foods, baked products, and beef products.
+
+**Data citation:** United States Department of Agriculture. https://fdc.nal.usda.gov/index.html
+
+
+### Attach required packages:
+```{r setup, include = TRUE, warning = FALSE, message = FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+ 
+library(tidyverse)
+library(here)
+library(ggfortify) # For PCA biplot
+library(patchwork)
+library(broom)
+```
+
+### Read in the data
+```{r}
+nutrients <- read_csv(here("data", "usda_nutrients.csv"))
+```
+
+### Filter the data
+```{r}
+# Filter food groups for restaurant foods, baked products, and beef products.
+nutrients_filter <- nutrients %>% 
+  filter(FoodGroup == c("Restaurant Foods", "Baked Products", "Beef Products"))
+```
+
+### Run the PCA
+```{r}
+nutrients_pca <- nutrients_filter %>% 
+  select(ends_with('_g')) %>% 
+  scale() %>% # scale the selected variables and pass to the prcomp() function
+  prcomp()
+```
+
+### Create a biplot using autoplot
+```{r}
+autoplot(nutrients_pca,
+     	data = nutrients_filter,
+     	loadings = TRUE,
+     	colour = 'FoodGroup', # colour needs to be British spelling
+     	loadings.label = TRUE,
+     	loadings.colour = "black",
+     	loadings.label.colour = "black",
+     	loadings.label.vjust = -0.5) +
+  theme_classic()
+```
+
+**Figure 1.** PCA biplot between PC1 and PC2 when looking at protein, fiber, carbohydrates, sugar, and fat of baked products, beef products, and restaurant foods. 
+
+### Summary
+- All three food groups seem to have distinct clusters.
+- Beef products associate more strongly with protein than with the other nutrients. 
+- Fiber, carbs, and sugars tend to be more similar to each other than to protein. They are positively correlated.
+- Protein is about 180 degrees different than carbs and sugars. This means they have a correlation of -1.
+- Fiber and fat have a correlation of 0 since they are about 90 degrees.
+- Baked products are more similar to restaurant food than beef products based on these variables.
+- Of the three clusters, beef products and baked products are the most different.
+ 
+ 
+ 
+ 
+ 
+ 
+## 2. Analysis of Seawater
+
+### Overview
+This analysis will look at the relationship between oxygen saturation of seawater off California’s coast and several physical and chemical variables including oxygen saturation, water temperature, water salinity, water depth, phosphate concentration, and nitrite concentrations.
+
+Data citation: CalCOFI data are available for use without restriction. Data downloaded from https://calcofi.org/ccdata.html.  Accessed 1/10/2022.
+
+### Attach required packages
+```{r}
+
+# load packages
+library(tidyverse)
+library(here)
+library(AICcmodavg)
+library(equatiomatic)
+```
+
+### Read in the data
+```{r}
+seawater_samples <- read_csv(here('data', 'calcofi_seawater_samples.csv'))
+```
+
+### Clean the data
+```{r}
+seawater_clean <- seawater_samples %>% 
+  drop_na() %>% 
+  rename(temp = t_deg_c, # variables are renamed so they are easier to work with and understand
+         depth = depth_m,
+         phosphate = po4u_m,
+         nitrite = no2u_m)
+```
+
+### Create linear regression models using functions to store the equations
+Model 1 is oxygen saturation as a function of water temperature, salinity, and phosphate concentration.
+
+Model 2 is oxygen saturation as a function of water temperature, salinity, phosphate concentration, and depth.
+
+A third model has also been added. Model 3 is oxygen saturation as a function of water temperature, salinity, phosphate concentration, nitrite concentration, and depth.
+
+```{r}
+f1 <- o2sat ~ temp + salinity + phosphate
+mdl1 <- lm(f1, data = seawater_clean)
+
+f2 <- o2sat ~ temp + salinity + phosphate + depth
+mdl2 <- lm(f2, data = seawater_clean)
+
+f3 <- o2sat ~ temp + salinity + phosphate + + nitrite + depth
+mdl3 <- lm(f3, data = seawater_clean)
+```
+
+### Use AIC to compare the models
+AIC = Akaike Information Criterion
+
+Model with the lowest AIC is the preferred model. Ideally, the best model is lower than the next best model by at least 2.0. A difference of 2 indicates a significant difference in model fit.
+
+```{r}
+AICc(mdl1) # AICc() corrects for sample size
+
+AICc(mdl2)
+
+AICc(mdl3)
+
+AICcmodavg::aictab(list(mdl1, mdl2, mdl3))
+```
+
+- AIC of model 1 = 619.0251
+
+- AIC of model 2 = 616.6048
+
+- AIC of model 3 = 613.5962
+
+- The AIC of model 1 > model 2 > model 3.
+
+- Model 3 is lower than model 2 by 3.01 and lower than model 1 by 5.43, so since it is lower by at least 2, model 3 is the preferred model.
+
+- Model 3 is the preferred model via the AIC method.
+
+
+### Use 10-fold cross validation to compare the models
+Root-mean-square error is the scoring method.
+
+```{r}
+folds <- 10 # number of folds
+fold_vec <- rep(1:folds, length.out = nrow(seawater_clean)) # fold vector is repeating over each fold
+table(fold_vec)
+
+set.seed(42) # allows others to get same set of random numbers if they try to replicate this work
+
+seawater_fold <- seawater_clean %>% 
+  mutate(group = sample(fold_vec, size = n(), replace = FALSE))
+```
+
+Create root-mean-square error function.
+
+```{r}
+calc_rmse <- function(x, y) {
+  rmse_result <- (x-y)^2 %>% mean() %>% sqrt()
+  return(rmse_result)
+}
+```
+
+Calculate over all folds and take the average.
+
+```{r}
+rmse_df <- data.frame() # Create a blank data frame.
+
+# Below is a for loop - loops through all 10 folds.
+for(i in 1:folds) {
+  kfold_test_df <-seawater_fold %>% 
+    filter(group == i) # in group i
+  kfold_train_df <-seawater_fold %>% 
+    filter(group != i) # not in group i
+  
+  kfold_mdl1 <- lm(f1, data = kfold_train_df)
+  kfold_mdl2 <- lm(f2, data = kfold_train_df)
+  kfold_mdl3 <- lm(f3, data = kfold_train_df)
+  
+  kfold_pred_df <- kfold_test_df %>% 
+    mutate(mdl1 = predict(kfold_mdl1, kfold_test_df),
+           mdl2 = predict(kfold_mdl2, .), # the period is a shortcut that says you are predicting on the data frame
+           mdl3 = predict(kfold_mdl3, .)) 
+  kfold_rmse <- kfold_pred_df %>% 
+    summarize(rmse_mdl1 = calc_rmse(mdl1, o2sat),
+              rmse_mdl2 = calc_rmse(mdl2, o2sat),
+              rmse_mdl3 = calc_rmse(mdl3, o2sat))
+  
+  #Store the last chunk above by combining with the blank data frame from above.
+  rmse_df <- bind_rows(rmse_df, kfold_rmse)
+}
+
+rmse_df %>% 
+  summarize(mean_rmse_mdl1 = mean(rmse_mdl1),
+            mean_rmse_mdl2 = mean(rmse_mdl2),
+            mean_rmse_mdl3 = mean(rmse_mdl3))
+
+```
+
+- Model 1 RMSE = 4.976605
+
+- Model 2 RMSE = 4.876322
+
+- Model 3 RMSE = 4.795063
+
+- Model 3 has the lowest root-mean-square error meaning it has the lowest error when predicting data.
+
+- Model 3 is the preferred model via the k-fold cross validation method using RMSE scoring.
+
+
+**Both AIC and k-fold cross validation using root-mean-square error as the scoring method indicate model 3 to be the preferred model.**
+
+### The coefficients for the final predictive model are identified:
+
+```{r}
+final_mdl <- lm(f3, data = seawater_clean)
+summary(final_mdl)
+```
+
+### The final model:
+`r equatiomatic::extract_eq(final_mdl, wrap = TRUE)`
+
+
+Where:
+
+- o2sat = oxygen saturation
+
+- temp = water temperature in degrees Celsius
+
+- salinity = salinity of the water
+
+- phosphate = phosphate concentration in micro moles per liter
+
+- nitrite = nitrite concentration in micro moles per liter
+
+- depth = depth in meters
+
+
+### The final model with numbers:
+`r equatiomatic::extract_eq(final_mdl, wrap = TRUE, use_coefs = TRUE)`
+ 
+ 
+ 
+ 
+ 
+ 
+## 3. Binary Logistic Regression to Identify Palmetto Species
+
+### Overview
+This script uses variables such as plant height, canopy length, canopy width, and the number of green leaves to classify whether palmettos are of species *Serenoa repens* or *Sabal etonia*. Binary logistic regression is used to test feasibility.
+
+Data was collected from 1981 to 2017 in south-central Florida. It includes information regarding year, plant type, species, site, habitat, treatment, survival, height, canopy length, canopy width, number of green leaves, scape, new leaves, canopy, if long, comments, and biomass.
+
+**Data citation:** Abrahamson, W.G. 2019. Survival, growth and biomass estimates of two dominant palmetto species of south-central Florida from 1981 - 2017, ongoing at 5-year intervals ver 1. Environmental Data Initiative. https://doi.org/10.6073/pasta/f2f96ec76fbbd4b9db431c79a770c4d5
+
+
+```{r}
+library(tidyverse)
+library(here)
+library(GGally)
+library(broom)
+library(jtools)
+library(caret)
+library(AICcmodavg)
+library(data.table)
+library(knitr)
+```
+
+```{r}
+palmetto <- read_csv(here("data", "palmetto.csv")) # Read in the data
+```
+
+### Wrangle the data
+Select columns for use in the analysis, change values in the species column to species names, and convert the species column to a factor class.
+
+```{r}
+palmetto_clean <- palmetto %>% # Clean the data table
+  select(species, height:green_lvs) %>% # Select only the columns I need for analysis, the colon means "all the way over to"
+  drop_na()
+
+# Change the values 1 and 2 in the species column to actual species names. 1 = Serenoa repens, 2 = Sabal etonia
+palmetto_clean$species <- ifelse(palmetto_clean$species==1,'Serenoa repens','Sabal etonia') 
+
+# Convert the  species column to a factor class
+palmetto_clean$species <- as.factor(palmetto_clean$species) 
+
+# levels(palmetto_clean$species) in the console revealed Sabal etonia is factor level 0 and Serenoa repens is factor level 1
+```
+
+### Visualize the data to identify trends.
+
+Differences in height, canopy length, canopy width, and green leaves for *Serenoa repens* or *Sabal etonia*.
+
+```{r, include = FALSE}
+palmetto_clean %>% 
+  ggpairs(aes(color = species)) # Used to get an overview of data before final visualizations are made
+```
+
+```{r}
+ggplot(data = palmetto_clean, aes(x = height, y = length)) +
+  geom_point(aes(color = species)) + 
+  labs(title = 'Distribution of Height vs. Canopy Length of Two Palmetto Species', 
+       x = 'Plant Height (cm)', 
+       y = 'Canopy Length (cm)', 
+       color = "Species") + # title, axis labels, and legend title
+  theme_minimal() # sets the theme of the graph - for visual purposes
+```
+
+**Figure 1.** The relationship between canopy length (cm) and maximum plant height (cm) is shown for each species. *Sabal etonia* is shown in red. *Serenoa repens* is shown in blue.
+
+
+```{r}
+ggplot(data = palmetto_clean, aes(x = width, y = green_lvs)) +
+  geom_point(aes(color = species)) + 
+  labs(title = 'Distribution of Canopy Width vs. Number of Green Leaves of Two Palmetto Species', 
+x = 'Canopy Width (cm)', 
+y = 'Number of Green Leaves', 
+color = "Species") + # title, axis labels, and legend title
+  theme_minimal() # sets the theme of the graph - for visual purposes
+```
+
+**Figure 2.** The relationship between the number of green leaves and canopy width (cm) is shown for each species. *Sabal etonia* is shown in red. *Serenoa repens* is shown in blue. 
+
+Based on these plots, the number of green leaves is the most likely variable to help classify the species correctly. It shows the most difference between species. Canopy width, plant height, and canopy length showed similar trends between species.
+
+### Binary logistic regression
+
+```{r}
+# Store formulas
+f1 <- species ~ height + length + width + green_lvs
+
+f2 <- species ~ height + width + green_lvs
+```
+
+
+```{r}
+# Binomial logistic regression for model 1 which includes height + length + width + green_lvs.
+palm_blr1 <- glm(formula = f1, 
+                    data = palmetto_clean,
+                    family = 'binomial')
+```
+
+
+```{r}
+# Binomial logistic regression for model 2 which includes height + width + green_lvs and does not include length.
+palm_blr2 <- glm(formula = f2, 
+                    data = palmetto_clean,
+                    family = 'binomial')
+```
+
+### Identify which model performs better
+Compare the models using AICc
+
+```{r}
+AICcmodavg::aictab(list(palm_blr1, palm_blr2)) # this function compares competing models
+```
+
+- Model 1 is better because the AIC for model 1 (5194.57) is more than two less than the AIC of model 2 (5987.48).
+
+
+Compare with a 10-fold cross-validation, using prediction accuracy as our metric.
+
+```{r}
+# Using `caret` ("**C**lassification **A**nd **RE**gression **T**raining"):
+set.seed(123) 
+
+# tr_ctrl <- trainControl(method = "cv", number = 10)
+tr_ctrl <- trainControl(method = "repeatedcv", number = 10, repeats = 10)
+
+# Train the model
+model1 <- train(f1, data = palmetto_clean, 
+               method = "glm", family = 'binomial',
+               trControl = tr_ctrl)
+
+model2 <- train(f2, data = palmetto_clean, 
+               method = "glm", family = 'binomial',
+               trControl = tr_ctrl)
+```
+
+- Model 1 (92% accurate) is more accurate than model 2 (90% accurate) according to 10-fold cross validation.
+
+- **Based on both AIC values and 10-fold cross validation, model 1 is the better model.**
+
+### Train model 1 using the entire dataset, and create a finalized table containing the binary logistic regression model results 
+
+```{r}
+final_mdl <- glm(formula = f1, 
+                 data = palmetto_clean, 
+                 family = 'binomial')
+```
+
+
+**Table 1.** Model 1 binary logistic regression model results.
+
+```{r}
+### Get a tidy version w/ broom:
+final_mdl_tidy <- broom::tidy(final_mdl)
+
+setnames(final_mdl_tidy, old=c("term","estimate", "std.error", "statistic", "p.value"), new=c("Term","Estimate", "Standard Error", "z-value", "p-value"))
+
+kable(final_mdl_tidy)
+```
+
+- The model is predicting the likelihood that the species is a *Serenoa repens* because the factor level of *Serenoa repens* is 1.
+
+- All variables are statistically significant.
+
+- Higher length and width would be less likely to be *Serenoa repens* because the value is negative.
+
+- Higher height and more green leaves would be more likely to be a *Serenoa repens* because the value is positive. This makes sense when looking at graphs above.
+
+### Evaluation of how successfully this model would “classify” a plant as the correct species, using a 50% cutoff.
+
+**Table 2.** Evaluation of how successfully this model would “classify” a plant as the correct species, using a 50% cutoff.
+
+```{r}
+blr1_fitted <- palm_blr1 %>% # fitted column reports the probability that an individual is a Serenoa repens
+  broom::augment(type.predict = "response") %>% # instead of taking the log odds we are taking the odds and converting them into a probability
+  mutate(predicted_species = ifelse(.fitted >= 0.5, "Serenoa repens", "Sabal etonia")) %>% 
+  group_by(species) %>% # separate by species
+  summarize(number_correctly_identified = sum(species == predicted_species),
+            number_total = n()) %>% # number_total is needed to identify percent correctly identified
+  mutate(percent_correctly_identified = number_correctly_identified/number_total * 100) %>% 
+  select(species, number_correctly_identified, percent_correctly_identified)
+
+setnames(blr1_fitted, old=c("species","number_correctly_identified", "percent_correctly_identified"), new=c("Species","Number Correctly Identified", "Percent Correctly Identified"))
+kable(blr1_fitted)
+```
+
+A binary logistic regression model using plant height, canopy length, canopy width and green leaves as predictor variables is better at predicting palmetto species (*Serenoa repens* and *Sabal etonia*) than a model using plant height, canopy width and the number of green leaves. The model correctly identified 5701 (92.62%) of *Sabal etonia* correctly and 5548 (90.77%) of *Serenoa repens* correctly.
+ 
+  
+   
+    
+     
+      
+## 4. Non-Linear Least Squares to Analyze Lizard Populations
+
+### Overview
+This script uses non linear least squares to estimate parameters of a length to weight model for lizard populations in New Mexico.
+
+Data was collected from 1989 to 2006 on 11 NPP study locations at the Jornada Basin LTER. The dataset includes information regarding species, sex, snout vent length, and weight.
+
+**Data citation:** Lightfoot, D. and W.G. Whitford. 2020. Lizard pitfall trap data from 11 NPP study locations at the Jornada Basin LTER site, 1989-2006 ver 37. Environmental Data Initiative. https://doi.org/10.6073/pasta/4a6e258fb49c31e222ecbbcfd128967f
+
+### Load required packages
+```{r}
+library(purrr)
+library(tidyverse)
+library(Metrics)
+library(cowplot)
+library(here)
+library(data.table)
+library(knitr)
+```
+
+### Read in the data
+```{r}
+lizard <- read_csv(here("data", "lizard.csv")) # Read in the data
+```
+
+### Create a model
+Snout length to weight model: W = a(SVL)^b
+
+- W = weight
+
+- SVL = snout to vent length
+
+- a & b = parameters that need to be fitted
+
+```{r}
+calc_weight <- function(a, SV_length, b){
+ W = a*(SV_length)^b
+ 
+ return(W)
+}
+```
+
+### An initial guess must be made
+The model is exponential, so data will be log transformed and an OLS regression will be used to approximate parameters.
+
+#### Data is log transformed 
+SV_length and weight are log transformed
+
+```{r}
+# Add two new columns: log SVL and log weight.
+lizard_log <- lizard %>% 
+  mutate(log_length = log(lizard$SV_length)) %>% 
+  mutate(log_weight = log(lizard$weight))
+```
+
+#### OLS regression
+```{r}
+guess_model <- lm(log_weight ~ log_length, data = lizard_log)
+```
+
+
+### All species NLS - NLS model of all species starting with coefficients from OLS regression
+```{r}
+lizard_nls <- nls(weight ~ calc_weight(a, SV_length, b),
+                  data = lizard,
+                  start = list(a = exp(coefficients(guess_model)[1]), # starting values identified in OLS function above. a was found by taking the exponent of the intercept value.
+                               b = coefficients(guess_model)[2]), 
+                  trace = TRUE)
+
+
+#tidy model output
+lizard_nls_tidy <- broom::tidy(lizard_nls)
+
+setnames(lizard_nls_tidy, old=c("term","estimate", "std.error", "statistic", "p.value"), new=c("Term","Estimate", "Standard Error", "z-value", "p-value")) # changes names of columns on table
+
+kable(lizard_nls_tidy) # creates clean table
+```
+
+### Plot of fitted NLS model and lizards separated by sex.
+```{r}
+predict1 <- predict(lizard_nls)
+
+all_sp_complete <- data.frame(lizard, predict1) # adds prediction column to original data table
+  
+ggplot(data = all_sp_complete, aes(x = SV_length, y = weight)) +
+  geom_point(aes(color = sex)) +
+  geom_line(aes(x = SV_length, y = predict1),
+            color = "black",
+            size = 1) +
+  labs(x = "Snout to Vent Length (mm)",
+       y = "Weight (g)",
+       title = "Western Whiptail Males and Nonlinear Least Squares Model Predictions") +
+  theme_minimal()
+```
+
+**Figure 1.** NLS model overlaid with lizard data separated by sex.
+
+
+### RMSE Function
+```{r}
+# define RMSE function
+calc_rmse <- function(x, y) {
+  rmse_result <- (x-y)^2 %>% mean() %>% sqrt()
+  return(rmse_result)
+}
+```
+
+### RMSE of all species NLS
+```{r}
+rmse_predict_all_sp <- all_sp_complete %>% 
+  summarize(rmse_all_sp = calc_rmse(weight, predict1))
+
+rmse_predict_all_sp
+```
+
+
+### Western whiptail lizard NLS
+
+```{r}
+# Filter male western whiptail lizards
+western_whiptails <- lizard_log %>% 
+  filter(spp == "CNTI") %>% 
+  filter(sex == "M")
+```
+
+#### OLS regression to identify coefficients to use for western whiptail gueses
+```{r}
+ww_guess_model <- lm(log_weight ~ log_length, data = western_whiptails)
+```
+
+### NLS model of western whiptails starting with coefficients from OLS regression
+```{r}
+ww_nls <- nls(weight ~ calc_weight(a, SV_length, b), # compare weight to the calc_weight function
+                  data = western_whiptails,
+                  start = list(a = exp(coefficients(ww_guess_model)[1]), 
+                               b = coefficients(ww_guess_model)[2]), 
+                  trace = TRUE)
+
+#tidy model output
+ww_nls_tidy <- broom::tidy(ww_nls)
+
+setnames(ww_nls_tidy, old=c("term","estimate", "std.error", "statistic", "p.value"), new=c("Term","Estimate", "Standard Error", "z-value", "p-value"))
+
+kable(ww_nls_tidy)
+```
+
+
+```{r}
+predict <- predict(ww_nls)
+
+ww_complete <- data.frame(western_whiptails, predict) # adds prediction column to original data table
+```
+
+### RMSE for western whiptail NLS
+```{r}
+rmse_predict_ww <- ww_complete %>% 
+  summarize(rmse_ww = calc_rmse(weight, predict))
+
+rmse_predict_ww
+```
+
+### Plot of the output from the western whiptail NLS model to the general nls model for all species by graphing the model fits on the Western Whiptail male data.
+```{r}
+ggplot(data = ww_complete, aes(x = SV_length, y = weight)) +
+  xlim(40, 110) + # limit x axis SV_length values to min and max western whiptail SVL's for better visualization
+  ylim(0, 40) + # limit y axis weight values for better visualization
+  geom_point() + # display western whiptail male points
+  geom_line(aes(x = SV_length, y = predict), # add western whiptail NLS line
+            color = "blue",
+            size = 1) +
+  geom_line(data = all_sp_complete, aes(x = SV_length, y = predict1), # add all sp. NLS line
+            color = "red",
+            size = 1) +
+  labs(x = "Snout to Vent Length (mm)",
+       y = "Weight (g)",
+       title = "Western Whiptail NLS Model and All Species NLS Model Displayed with Western Whiptail Male Data Points") +
+  theme_minimal()
+```
+
+**Figure 2.** NLS model for all species (red) and NLS model for western whiptail lizards (blue) plotted against male western whiptail datapoints. The RMSE for the all species NLS is 2.790684. The RMSE for western whiptail NLS is 3.349286. The model for all species should be used because it has a lower RMSE and fits the data better.
