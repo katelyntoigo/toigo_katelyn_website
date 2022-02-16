@@ -3,12 +3,13 @@ title: "Resume"
 description: |
   Interests, Education, Experience, and More
 ---
+<a href = 'Toigo_Katelyn_Resume.pdf' target = '_blank'>Click here for a PDF</a>
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 ```
 
-## Interests
+### Interests
 
 I am keenly interested in working with private landowners to restore and conserve their land and, ultimately, envision myself working for a land trust.
 
@@ -16,7 +17,7 @@ In my free time, you will find me hiking, cooking, painting, visiting national p
 
 
 
-## Education
+### Education
 
 **University of California, Santa Barbara** | Santa Barbara, CA
 
@@ -28,28 +29,116 @@ B.S. in Zoology & B.S. in Geography and Environmental Resources | August 2016 - 
 
 
 
-## Experience
 
-**Conservation Connect Fellow** | National Forest Foundation | May 2021 - May 2022
+### MASTER’S GROUP PROJECT
 
-- Designed a business plan for the Southern Idaho Forest Fund
-- Conducted meetings with U.S. Forest Service personnel
-- Compiled internal and external reports about southern Idaho National Forests shared with the Washington D.C. U.S. Forest Service office
-- Took notes during meetings
-- Created a direct mail postcard which was sent to residents of the Wood River Valley
-- Assisted in a media tour and community engagement event
-- Wrote a blog post
+**The California Solar-Conservation Nexus** (4/21 – Present)
 
+**Client:** The Nature Conservancy (TNC) | **Role:** Financial Manager | **Deliverables:** Report and Presentation
 
-**Floodplain Restoration GLOBE Intern** | The Nature Conservancy | June 2019 - August 2019
+- Collaborate and communicate with team members to conduct spatial analyses, write reports, etc.
 
-- Worked with the U.S. Fish and Wildlife Service and Illinois Natural History Survey.
-- Conducted a public use survey and wrote a final summary report.
-- Created seamless stewardship data maps using ArcGIS and Collector.
+- Facilitate meetings with the client and advisors
+
+- Design an economic model to compare profitability of conservation easements to solar developments
+
+- Provide policy recommendations for conservation and solar development on retired agricultural lands
 
 
-## Projects
 
-**Poster Presented at the World Congress of Malacology** | August 2019
 
-- Effects of Strip Mine Reclamation Practices on Terrestrial Snail Communities
+### ENVIRONMENTAL EXPERIENCE
+
+**Conservation Connect Fellow – National Forest Foundation (NFF)**, Boise, ID (5/21– Present)
+
+- Communicated with stakeholders and U.S. Forest Service (USFS)
+
+- Identified USFS challenges and wrote a summary report for NFF and the USFS Washington D.C. office
+
+- Created a business plan for the Southern Idaho Forest Fund for presentation to potential donors
+
+- Designed a mailer delivered to over 23,000 residents of the Wood River Valley
+
+**Floodplain Restoration GLOBE Intern – The Nature Conservancy (TNC)**, Havana, IL (6/19–8/19)
+
+- Coordinated with U.S. Fish and Wildlife Service, the Illinois Natural History Survey, and the Illinois River Biological Station performing research and stewardship.
+
+- Conducted public use survey and wrote final summary report to guide management strategies.
+
+- Created 10 stewardship data maps using ArcGIS Desktop to guide future stewardship activities.
+
+- Composed final presentation summating accomplishments and presented to the Illinois Chapter of TNC.
+
+**Environmental Resources Intern – Cypress Creek National Wildlife Refuge**, Ullin, IL (8/19–12/19)
+
+- Compiled LiDAR DEM rasters of Cypress Creek National Wildlife Refuge using SAGA GIS and ArcGIS Desktop to determine potential restoration areas within 8 habitat types found on the Refuge.
+
+- Guided canoe tours for visitors of the Refuge.
+
+- Directed children’s activities teaching the importance of the local refuge at a Cache River Days event.
+
+- Performed radio telemetry to locate endangered Indiana bat roosts to better understand their habits.
+
+
+
+
+### COMMUNICATION & RESEARCH EXPERIENCE
+**Research Assistant – Southern Illinois University**, Dr. Jason Brown Lab, Carbondale, IL (8/19–5/20)
+
+- Collaborated in creation of Tangible Niche & Demographic Simulator (TANAGERS) which combines
+environmental and biological variables to create a powerful population genetics teaching tool.
+- Employed GRASS GIS in construction of TANAGERS.
+- Presented TANAGERS at Southern Illinois University Annual Research Presentation (50+ audience).
+- Cooperated with a computer science student to streamline the simulator function.
+
+**Student Researcher – Southern Illinois University**, Carbondale, IL (8/18–5/19)
+
+- Designed, wrote, and awarded a grant proposal ($2000) for research on the Effects of Strip Mine
+Reclamation Practices on Terrestrial Snail Communities.
+
+- Conducted independent research and led a team of student assistants.
+
+- Amplified a region of mitochondrial rrnL (16s) gene via PCR to aid snail identification.
+
+- Presented poster in-person to 300 attendees at the World Congress of Malacology.
+
+**Research Assistant – University of Illinois, Illinois Natural History Survey**, Sullivan, IL (6/18–8/18)
+
+- Sampled mid-sized rivers via electrofishing, side scan sonar, and other methods.
+
+- Analyzed data using ArcGIS Desktop to identify habitat-fish associations.
+
+- Wrote a protocol to guide future employees.
+
+- Collaborated with researchers from Eastern Illinois University.
+
+**Research Intern – National Great Rivers Research and Education Center**, East Alton, IL (6/17–8/17)
+
+- Coordinated sampling of mid-sized river habitat (Kaskaskia and Embarras Rivers in Illinois).
+
+- Interpreted side scan sonar images to identify woody debris using ArcGIS Desktop.
+
+- Identified fish species (larval, juvenile, and adult).
+
+- Composed final PowerPoint presentation to demonstrate the educational benefit of the internship.
+
+
+
+
+### PROFESSIONAL PRESENTATIONS
+
+- **Effects of Strip Mine Reclamation Practices on Terrestrial Snails, World Congress of Malacology**, 2019 
+
+- **Strip Mine Reclamation – Reestablishing Sustainable Ecosystems in Southern Illinois, Department of Geography and Environmental Resources (Southern Illinois University)** Annual Poster Session, 2019 Habitat Value in Mid-Sized Rivers in Illinois, Illinois Academy of Science, 2018
+
+
+
+
+### SKILLS
+
+**Computer**: ArcGIS (Desktop and Pro), Microsoft Office Suite, Marxan, MaxEnt, SDMtoolbox, Circuitscape, ERDAS Imagine, QGIS, R, GitHub, Zoom, Cisco Webex, Slack, data analysis, social media
+
+**Technical**: GPS, DNA barcoding, side scan sonar, electrofishing, radio telemetry, grant writing
+Public Outreach: Leading public programs, conducting surveys, youth education programs
+
+**Field**: Prescribed burn assistance, fish sampling/identification, snail sampling/identification, mammal sampling techniques, bird surveys, plant surveys, invasive plant identification and removal, benthic substrate sampling, soil analyses, boat and vehicle operation
