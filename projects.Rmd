@@ -2,6 +2,9 @@
 title: "Projects"
 description: |
   Projects Completed
+output:
+  html_document:
+    code_folding: hide
 ---
 
 ## 1. Principal Components Analysis to Analyze Food Nutrients
@@ -446,183 +449,100 @@ A binary logistic regression model using plant height, canopy length, canopy wid
     
      
       
-## 4. Non-Linear Least Squares to Analyze Lizard Populations
+## 4. Text Analysis of 2021 IPCC Summary for Policymakers Report
 
 ### Overview
-This script uses non linear least squares to estimate parameters of a length to weight model for lizard populations in New Mexico.
+This script uses R to conduct a text analysis of the 2021 Intergovernmental Panel on Climate Change (IPCC) Summary for Policymakers report.
 
-Data was collected from 1989 to 2006 on 11 NPP study locations at the Jornada Basin LTER. The dataset includes information regarding species, sex, snout vent length, and weight.
+First, data is wrangled to get tokens into tidy format and remove stop words, next counts for the most frequently used words in the text are visualized, then a sentiment analysis using the NRC lexicon is performed.
 
-**Data citation:** Lightfoot, D. and W.G. Whitford. 2020. Lizard pitfall trap data from 11 NPP study locations at the Jornada Basin LTER site, 1989-2006 ver 37. Environmental Data Initiative. https://doi.org/10.6073/pasta/4a6e258fb49c31e222ecbbcfd128967f
+**Data citation:** 
+IPCC, 2021: Summary for Policymakers. In: Climate Change 2021: The Physical Science Basis. Contribution of Working Group I to the Sixth Assessment Report of the Intergovernmental Panel on Climate Change [Masson- Delmotte, V., P. Zhai, A. Pirani, S.L. Connors, C. Péan, S. Berger, N. Caud, Y. Chen, L. Goldfarb, M.I. Gomis, M. Huang, K. Leitzell, E. Lonnoy, J.B.R. Matthews, T.K. Maycock, T. Waterfield, O. Yelekçi, R. Yu, and B. Zhou (eds.)]. Cambridge University Press. In Press. https://www.ipcc.ch/report/ar6/wg1/downloads/report/IPCC_AR6_WGI_SPM_final.pdf
 
-### Load required packages
+### Load necessary packages
 ```{r}
-library(purrr)
 library(tidyverse)
-library(Metrics)
-library(cowplot)
+library(tidytext)
+library(textdata)
+library(pdftools)
+library(ggwordcloud)
 library(here)
-library(data.table)
-library(knitr)
 ```
 
-### Read in the data
-```{r}
-lizard <- read_csv(here("data", "lizard.csv")) # Read in the data
+### Load the 2021 IPCC Report
+```{r, cache = TRUE}
+ipcc_text <- pdf_text(here('data', 'IPCC_2021pdf.pdf'))
 ```
 
-### Create a model
-Snout length to weight model: W = a(SVL)^b
-
-- W = weight
-
-- SVL = snout to vent length
-
-- a & b = parameters that need to be fitted
-
+### Get the IPCC report into a dataframe and remove stop words
 ```{r}
-calc_weight <- function(a, SV_length, b){
- W = a*(SV_length)^b
+ipcc_lines <- data.frame(ipcc_text) %>% 
+  mutate(page = 1:n()) %>%
+  mutate(text_full = str_split(ipcc_text, pattern = '\\n')) %>% 
+  unnest(text_full) %>% 
+  mutate(text_full = str_trim(text_full)) 
+
+
+ipcc_words <- ipcc_lines %>% 
+  unnest_tokens(word, text_full) %>% 
+  select(-ipcc_text)
+
+# Remove stop words
+head(stop_words)
  
- return(W)
-}
+ipcc_words_clean <- ipcc_words %>% 
+  anti_join(stop_words, by = 'word')
 ```
 
-### An initial guess must be made
-The model is exponential, so data will be log transformed and an OLS regression will be used to approximate parameters.
-
-#### Data is log transformed 
-SV_length and weight are log transformed
-
 ```{r}
-# Add two new columns: log SVL and log weight.
-lizard_log <- lizard %>% 
-  mutate(log_length = log(lizard$SV_length)) %>% 
-  mutate(log_weight = log(lizard$weight))
+# Count
+nonstop_ipcc_counts <- ipcc_words_clean %>% 
+  count(page, word)
 ```
 
-#### OLS regression
+### Find the top 15 words from the document
 ```{r}
-guess_model <- lm(log_weight ~ log_length, data = lizard_log)
-```
+top15 <- nonstop_ipcc_counts %>% 
+  arrange(-n) %>% 
+  slice(1:15)
 
 
-### All species NLS - NLS model of all species starting with coefficients from OLS regression
-```{r}
-lizard_nls <- nls(weight ~ calc_weight(a, SV_length, b),
-                  data = lizard,
-                  start = list(a = exp(coefficients(guess_model)[1]), # starting values identified in OLS function above. a was found by taking the exponent of the intercept value.
-                               b = coefficients(guess_model)[2]), 
-                  trace = TRUE)
-
-
-#tidy model output
-lizard_nls_tidy <- broom::tidy(lizard_nls)
-
-setnames(lizard_nls_tidy, old=c("term","estimate", "std.error", "statistic", "p.value"), new=c("Term","Estimate", "Standard Error", "z-value", "p-value")) # changes names of columns on table
-
-kable(lizard_nls_tidy) # creates clean table
-```
-
-### Plot of fitted NLS model and lizards separated by sex.
-```{r}
-predict1 <- predict(lizard_nls)
-
-all_sp_complete <- data.frame(lizard, predict1) # adds prediction column to original data table
-  
-ggplot(data = all_sp_complete, aes(x = SV_length, y = weight)) +
-  geom_point(aes(color = sex)) +
-  geom_line(aes(x = SV_length, y = predict1),
-            color = "black",
-            size = 1) +
-  labs(x = "Snout to Vent Length (mm)",
-       y = "Weight (g)",
-       title = "Western Whiptail Males and Nonlinear Least Squares Model Predictions") +
+cloud <- ggplot(data = top15, 
+                     aes(label = word)) +
+  geom_text_wordcloud(aes(color = n, size = n), shape = "diamond") +
+  scale_size_area(max_size = 6) +
+  scale_color_gradientn(colors = c("darkgreen","blue","purple")) +
   theme_minimal()
+ 
+cloud
 ```
 
-**Figure 1.** NLS model overlaid with lizard data separated by sex.
+**Figure 1.** Wordcloud of the 15 most frequently used words in the 2021 IPCC report.
 
+### Sentiment analysis with NRC lexicon
 
-### RMSE Function
-```{r}
-# define RMSE function
-calc_rmse <- function(x, y) {
-  rmse_result <- (x-y)^2 %>% mean() %>% sqrt()
-  return(rmse_result)
-}
-```
+NRC lexicon:https://saifmohammad.com/WebPages/NRC-Emotion-Lexicon.htm
 
-### RMSE of all species NLS
-```{r}
-rmse_predict_all_sp <- all_sp_complete %>% 
-  summarize(rmse_all_sp = calc_rmse(weight, predict1))
-
-rmse_predict_all_sp
-```
-
-
-### Western whiptail lizard NLS
+Includes 8 emotions (anger, anticipation, disgust, fear, joy, sadness, surprise, trust).
 
 ```{r}
-# Filter male western whiptail lizards
-western_whiptails <- lizard_log %>% 
-  filter(spp == "CNTI") %>% 
-  filter(sex == "M")
+ipcc_nrc <- ipcc_words_clean %>% 
+  inner_join(get_sentiments("nrc"))
 ```
-
-#### OLS regression to identify coefficients to use for western whiptail gueses
-```{r}
-ww_guess_model <- lm(log_weight ~ log_length, data = western_whiptails)
-```
-
-### NLS model of western whiptails starting with coefficients from OLS regression
-```{r}
-ww_nls <- nls(weight ~ calc_weight(a, SV_length, b), # compare weight to the calc_weight function
-                  data = western_whiptails,
-                  start = list(a = exp(coefficients(ww_guess_model)[1]), 
-                               b = coefficients(ww_guess_model)[2]), 
-                  trace = TRUE)
-
-#tidy model output
-ww_nls_tidy <- broom::tidy(ww_nls)
-
-setnames(ww_nls_tidy, old=c("term","estimate", "std.error", "statistic", "p.value"), new=c("Term","Estimate", "Standard Error", "z-value", "p-value"))
-
-kable(ww_nls_tidy)
-```
-
 
 ```{r}
-predict <- predict(ww_nls)
+# Find the count of words by page and sentiment bin: 
+ipcc_nrc_counts <- ipcc_nrc %>% 
+  count(page, sentiment)
 
-ww_complete <- data.frame(western_whiptails, predict) # adds prediction column to original data table
+ggplot(data = ipcc_nrc_counts, aes(x = sentiment, y = n)) +
+  geom_col() +
+  theme_minimal() +
+  coord_flip() + 
+  ggtitle("Sentiment Analysis of 2021 IPCC Report\nusing NRC Lexicon") +
+  labs(x = "Sentiment",
+       y = "Count")
 ```
 
-### RMSE for western whiptail NLS
-```{r}
-rmse_predict_ww <- ww_complete %>% 
-  summarize(rmse_ww = calc_rmse(weight, predict))
-
-rmse_predict_ww
-```
-
-### Plot of the output from the western whiptail NLS model to the general nls model for all species by graphing the model fits on the Western Whiptail male data.
-```{r}
-ggplot(data = ww_complete, aes(x = SV_length, y = weight)) +
-  xlim(40, 110) + # limit x axis SV_length values to min and max western whiptail SVL's for better visualization
-  ylim(0, 40) + # limit y axis weight values for better visualization
-  geom_point() + # display western whiptail male points
-  geom_line(aes(x = SV_length, y = predict), # add western whiptail NLS line
-            color = "blue",
-            size = 1) +
-  geom_line(data = all_sp_complete, aes(x = SV_length, y = predict1), # add all sp. NLS line
-            color = "red",
-            size = 1) +
-  labs(x = "Snout to Vent Length (mm)",
-       y = "Weight (g)",
-       title = "Western Whiptail NLS Model and All Species NLS Model Displayed with Western Whiptail Male Data Points") +
-  theme_minimal()
-```
-
-**Figure 2.** NLS model for all species (red) and NLS model for western whiptail lizards (blue) plotted against male western whiptail datapoints. The RMSE for the all species NLS is 2.790684. The RMSE for western whiptail NLS is 3.349286. The model for all species should be used because it has a lower RMSE and fits the data better.
+**Figure 2.** Graph of the results of a sentiment analysis, using the 
+NRC lexicon, for the 2021 IPCC report.
