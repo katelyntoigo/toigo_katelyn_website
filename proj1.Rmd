@@ -1,0 +1,68 @@
+---
+title: "PCA"
+description: |
+  Analysis of Food Nutrients
+output: 
+  distill::distill_article:
+    code_folding: hide
+---
+
+```{r setup, include = TRUE, message = FALSE, warning = FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+library(tidyverse)
+library(here)
+library(ggfortify) # For PCA biplot
+library(patchwork)
+library(broom)
+```
+
+## Principal Components Analysis to Analyze Food Nutrients
+
+### Overview
+This script uses principal components analysis to analyze nutrient information for raw fruits and vegetables from the USDA National Nutrient Database (FoodDataCentral). Principal components analysis is an ordination method allowing us to understand as much about our multivariate data as possible in a simplified number of dimensions. Here, I'll use the `nutrients` data from the USDA to explore variable relationships and clustering. I will only use the measurements that are in grams (protein, fat, carbohydrates, sugar, fiber), and I will only look at restaurant foods, baked products, and beef products.
+
+**Data citation:** United States Department of Agriculture. https://fdc.nal.usda.gov/index.html
+
+### Read in the data
+```{r}
+nutrients <- read_csv(here("data", "usda_nutrients.csv"))
+```
+
+### Filter the data
+```{r}
+# Filter food groups for restaurant foods, baked products, and beef products.
+nutrients_filter <- nutrients %>% 
+  filter(FoodGroup == c("Restaurant Foods", "Baked Products", "Beef Products"))
+```
+
+### Run the PCA
+```{r}
+nutrients_pca <- nutrients_filter %>% 
+  select(ends_with('_g')) %>% 
+  scale() %>% # scale the selected variables and pass to the prcomp() function
+  prcomp()
+```
+
+### Create a biplot using autoplot
+```{r}
+autoplot(nutrients_pca,
+     	data = nutrients_filter,
+     	loadings = TRUE,
+     	colour = 'FoodGroup', # colour needs to be British spelling
+     	loadings.label = TRUE,
+     	loadings.colour = "black",
+     	loadings.label.colour = "black",
+     	loadings.label.vjust = -0.5) +
+  theme_classic()
+```
+
+**Figure 1.** PCA biplot between PC1 and PC2 when looking at protein, fiber, carbohydrates, sugar, and fat of baked products, beef products, and restaurant foods. 
+
+### Summary
+- All three food groups seem to have distinct clusters.
+- Beef products associate more strongly with protein than with the other nutrients. 
+- Fiber, carbs, and sugars tend to be more similar to each other than to protein. They are positively correlated.
+- Protein is about 180 degrees different than carbs and sugars. This means they have a correlation of -1.
+- Fiber and fat have a correlation of 0 since they are about 90 degrees.
+- Baked products are more similar to restaurant food than beef products based on these variables.
+- Of the three clusters, beef products and baked products are the most different.

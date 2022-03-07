@@ -87,26 +87,29 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
 
   <!--radix_placeholder_meta_tags-->
-  <title>Katelyn Toigo: Blog</title>
+  <title>Katelyn Toigo: Regression Equation Comparison</title>
 
+  <meta property="description" itemprop="description" content="Seawater Analysis"/>
 
 
 
   <!--  https://developers.facebook.com/docs/sharing/webmasters#markup -->
-  <meta property="og:title" content="Katelyn Toigo: Blog"/>
+  <meta property="og:title" content="Katelyn Toigo: Regression Equation Comparison"/>
   <meta property="og:type" content="article"/>
+  <meta property="og:description" content="Seawater Analysis"/>
   <meta property="og:locale" content="en_US"/>
   <meta property="og:site_name" content="Katelyn Toigo"/>
 
   <!--  https://dev.twitter.com/cards/types/summary -->
   <meta property="twitter:card" content="summary"/>
-  <meta property="twitter:title" content="Katelyn Toigo: Blog"/>
+  <meta property="twitter:title" content="Katelyn Toigo: Regression Equation Comparison"/>
+  <meta property="twitter:description" content="Seawater Analysis"/>
 
   <!--/radix_placeholder_meta_tags-->
   <!--radix_placeholder_rmarkdown_metadata-->
 
   <script type="text/json" id="radix-rmarkdown-metadata">
-  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","listing"]}},"value":[{"type":"character","attributes":{},"value":["Blog"]},{"type":"character","attributes":{},"value":["posts"]}]}
+  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","output"]}},"value":[{"type":"character","attributes":{},"value":["Regression Equation Comparison"]},{"type":"character","attributes":{},"value":["Seawater Analysis\n"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["code_folding"]}},"value":[{"type":"character","attributes":{},"value":["hide"]}]}]}]}
   </script>
   <!--/radix_placeholder_rmarkdown_metadata-->
   <!--radix_placeholder_navigation_in_header-->
@@ -2374,12 +2377,12 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
 </head>
 
-<body class="layout-listing">
+<body>
 
 <!--radix_placeholder_front_matter-->
 
 <script id="distill-front-matter" type="text/json">
-{"title":"Blog","authors":[]}
+{"title":"Regression Equation Comparison","description":"Seawater Analysis","authors":[]}
 </script>
 
 <!--/radix_placeholder_front_matter-->
@@ -2412,176 +2415,300 @@ Projects
 <!--/radix_placeholder_navigation_before_body-->
 <!--radix_placeholder_site_before_body-->
 <!--/radix_placeholder_site_before_body-->
-<!--radix_placeholder_article_listing-->
-
-
-<script type="application/javascript">
-
-function init_posts_list() {
-
-  function load_image(img) {
-    var src = $(img).attr('data-src');
-    if (src) {
-      $(img).attr('src', src);
-      $(img).on("load", function() {
-        img.removeAttribute('data-src');
-      });
-    }
-  }
-
-  function set_posts_visible(posts, visible) {
-    if (visible) {
-
-      // show bottom border by default
-      $(posts).removeClass('post-preview-last');
-
-      // apply limits if need be
-      var max_posts = 25;
-      var apply_limits = $('.posts-container').hasClass('posts-apply-limit');
-      if (apply_limits && posts.length > max_posts) {
-        posts = $(posts).slice(0, max_posts);
-      } else {
-        $('.posts-more a').addClass('hidden');
-      }
-
-      // apply last style
-      $(posts.slice(-1)[0]).addClass('post-preview-last');
-
-      $(posts).removeClass('hidden');
-      $(posts).find('img[data-src]').each(function(i, img) {
-        load_image(img);
-      });
-    } else {
-      $(posts).addClass('hidden');
-    }
-  }
-
-  function apply_hash_filter() {
-
-    // clear active state
-    $('.categories .active').removeClass('active');
-
-    // mark all posts invisible to start
-    set_posts_visible($('.posts-list').children('a'), false);
-
-    // if we have a hash filter
-    if (window.location.hash && window.location.hash.startsWith("#category:")) {
-
-      // mark posts that match the category visible
-      var page_category = window.location.hash.replace(/^#category:/, "");
-      page_category = decodeURIComponent(page_category)
-      var posts = $('.post-metadata').map(function(idx, script) {
-        var metadata = $.parseJSON($(script).html());
-        var post = null;
-        $.each(metadata.categories, function(idx, category) {
-          category = category.replace(/ /g,"_");
-          if ((page_category || '').toLowerCase() === "articles" || category === page_category) {
-            post = $(script).parent().get();
-            return false;
-          }
-        });
-        return post;
-      });
-      set_posts_visible(posts, true);
-
-      // mark the hash active
-      $('.categories li>a[href="' + decodeURIComponent(window.location.hash) + '"]').addClass('active');
-
-      // update the list_caption
-      var list_caption = $('.posts-list-caption');
-      var caption = (page_category || '').toLowerCase() === "articles"
-        ? list_caption.attr('data-caption')
-        : ('Category: ' + page_category.replace(/_/g," "));
-      list_caption.text(caption);
-
-    } else {
-
-      // no hash filter, make all posts visible (subject to max display)
-      set_posts_visible($('.posts-list').children(), true);
-
-      // reset list caption
-      var list_caption = $('.posts-list-caption');
-      list_caption.text(list_caption.attr('data-caption'));
-
-
-    }
-  }
-
-  // more articles
-  function apply_post_limits(apply) {
-    if (apply) {
-      $('.posts-container').addClass('posts-apply-limit');
-      $('.posts-more a').removeClass('hidden');
-    } else {
-      $('.posts-container').removeClass('posts-apply-limit');
-      $('.posts-more a').addClass('hidden');
-    }
-  }
-
-  // click handling for tags
-  $('.dt-tag').click(function(ev) {
-    window.location.hash = '#category:' + $(this).text().replace(/ /g, "_");
-    return false;
-  })
-
-  // hash filter handling
-  apply_hash_filter();
-  $(window).on('hashchange',function() {
-    apply_post_limits(true);
-    apply_hash_filter();
-  });
-
-  // more articles link
-  $('.posts-more a').click(function(e) {
-    e.preventDefault();
-    apply_post_limits(false);
-    apply_hash_filter();
-    return false;
-  });
-
-}
-
-</script>
-
-
-
-<div class="posts-container posts-apply-limit l-page">
-<div class="posts-list">
-<h1 class="posts-list-caption" data-caption="Blog">Blog</h1>
-<a href="posts/2022-01-19-welcome/" class="post-preview">
-<script class="post-metadata" type="text/json">{"categories":[]}</script>
-<div class="metadata">
-<div class="publishedDate">Feb. 4, 2022</div>
-<div class="dt-authors">
-<div class="dt-author">Katelyn Toigo</div>
-</div>
-</div>
-<div class="thumbnail">
-<img/>
-</div>
-<div class="description">
-<h2>Welcome</h2>
-<div class="dt-tags"></div>
-<p>Welcome to my page.</p>
-</div>
-</a>
-</div>
-<div class="posts-more">
-<a href="#">More articles &raquo;</a>
-</div>
-</div>
-<!--/radix_placeholder_article_listing-->
 
 <div class="d-title">
-<h1>Blog</h1>
+<h1>Regression Equation Comparison</h1>
 <!--radix_placeholder_categories-->
 <!--/radix_placeholder_categories-->
-
+<p><p>Seawater Analysis</p></p>
 </div>
 
 
 <div class="d-article">
-<div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<div class="layout-chunk" data-layout="l-body">
+<details>
+<summary>
+hide
+</summary>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'>knitr</span><span class='fu'>::</span><span class='va'><a href='https://rdrr.io/pkg/knitr/man/opts_chunk.html'>opts_chunk</a></span><span class='op'>$</span><span class='fu'>set</span><span class='op'>(</span>echo <span class='op'>=</span> <span class='cn'>TRUE</span>, message <span class='op'>=</span> <span class='cn'>FALSE</span>, warning <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://tidyverse.tidyverse.org'>tidyverse</a></span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://here.r-lib.org/'>here</a></span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'>AICcmodavg</span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://github.com/datalorax/equatiomatic'>equatiomatic</a></span><span class='op'>)</span>
+</code></pre>
+</div>
+</details>
+</div>
+<h2 id="analysis-of-seawater">Analysis of Seawater</h2>
+<h3 id="overview">Overview</h3>
+<p>This analysis will look at the relationship between oxygen saturation of seawater off California’s coast and several physical and chemical variables including oxygen saturation, water temperature, water salinity, water depth, phosphate concentration, and nitrite concentrations.</p>
+<p>Data citation: CalCOFI data are available for use without restriction. Data downloaded from <a href="https://calcofi.org/ccdata.html" class="uri">https://calcofi.org/ccdata.html</a>. Accessed 1/10/2022.</p>
+<h3 id="read-in-the-data">Read in the data</h3>
+<div class="layout-chunk" data-layout="l-body">
+<details>
+<summary>
+hide
+</summary>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>seawater_samples</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://readr.tidyverse.org/reference/read_delim.html'>read_csv</a></span><span class='op'>(</span><span class='fu'><a href='https://here.r-lib.org//reference/here.html'>here</a></span><span class='op'>(</span><span class='st'>'data'</span>, <span class='st'>'calcofi_seawater_samples.csv'</span><span class='op'>)</span><span class='op'>)</span>
+</code></pre>
+</div>
+</details>
+</div>
+<h3 id="clean-the-data">Clean the data</h3>
+<div class="layout-chunk" data-layout="l-body">
+<details>
+<summary>
+hide
+</summary>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>seawater_clean</span> <span class='op'>&lt;-</span> <span class='va'>seawater_samples</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='fu'><a href='https://tidyr.tidyverse.org/reference/drop_na.html'>drop_na</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/rename.html'>rename</a></span><span class='op'>(</span>temp <span class='op'>=</span> <span class='va'>t_deg_c</span>, <span class='co'># variables are renamed so they are easier to work with and understand</span>
+         depth <span class='op'>=</span> <span class='va'>depth_m</span>,
+         phosphate <span class='op'>=</span> <span class='va'>po4u_m</span>,
+         nitrite <span class='op'>=</span> <span class='va'>no2u_m</span><span class='op'>)</span>
+</code></pre>
+</div>
+</details>
+</div>
+<h3 id="create-linear-regression-models-using-functions-to-store-the-equations">Create linear regression models using functions to store the equations</h3>
+<p>Model 1 is oxygen saturation as a function of water temperature, salinity, and phosphate concentration.</p>
+<p>Model 2 is oxygen saturation as a function of water temperature, salinity, phosphate concentration, and depth.</p>
+<p>A third model has also been added. Model 3 is oxygen saturation as a function of water temperature, salinity, phosphate concentration, nitrite concentration, and depth.</p>
+<div class="layout-chunk" data-layout="l-body">
+<details>
+<summary>
+hide
+</summary>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>f1</span> <span class='op'>&lt;-</span> <span class='va'>o2sat</span> <span class='op'>~</span> <span class='va'>temp</span> <span class='op'>+</span> <span class='va'>salinity</span> <span class='op'>+</span> <span class='va'>phosphate</span>
+<span class='va'>mdl1</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/lm.html'>lm</a></span><span class='op'>(</span><span class='va'>f1</span>, data <span class='op'>=</span> <span class='va'>seawater_clean</span><span class='op'>)</span>
+
+<span class='va'>f2</span> <span class='op'>&lt;-</span> <span class='va'>o2sat</span> <span class='op'>~</span> <span class='va'>temp</span> <span class='op'>+</span> <span class='va'>salinity</span> <span class='op'>+</span> <span class='va'>phosphate</span> <span class='op'>+</span> <span class='va'>depth</span>
+<span class='va'>mdl2</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/lm.html'>lm</a></span><span class='op'>(</span><span class='va'>f2</span>, data <span class='op'>=</span> <span class='va'>seawater_clean</span><span class='op'>)</span>
+
+<span class='va'>f3</span> <span class='op'>&lt;-</span> <span class='va'>o2sat</span> <span class='op'>~</span> <span class='va'>temp</span> <span class='op'>+</span> <span class='va'>salinity</span> <span class='op'>+</span> <span class='va'>phosphate</span> <span class='op'>+</span> <span class='op'>+</span> <span class='va'>nitrite</span> <span class='op'>+</span> <span class='va'>depth</span>
+<span class='va'>mdl3</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/lm.html'>lm</a></span><span class='op'>(</span><span class='va'>f3</span>, data <span class='op'>=</span> <span class='va'>seawater_clean</span><span class='op'>)</span>
+</code></pre>
+</div>
+</details>
+</div>
+<h3 id="use-aic-to-compare-the-models">Use AIC to compare the models</h3>
+<p>AIC = Akaike Information Criterion</p>
+<p>Model with the lowest AIC is the preferred model. Ideally, the best model is lower than the next best model by at least 2.0. A difference of 2 indicates a significant difference in model fit.</p>
+<div class="layout-chunk" data-layout="l-body">
+<details>
+<summary>
+hide
+</summary>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://rdrr.io/pkg/AICcmodavg/man/AICc.html'>AICc</a></span><span class='op'>(</span><span class='va'>mdl1</span><span class='op'>)</span> <span class='co'># AICc() corrects for sample size</span>
+</code></pre>
+</div>
+</details>
+<pre><code>[1] 619.0251</code></pre>
+<details>
+<summary>
+hide
+</summary>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://rdrr.io/pkg/AICcmodavg/man/AICc.html'>AICc</a></span><span class='op'>(</span><span class='va'>mdl2</span><span class='op'>)</span>
+</code></pre>
+</div>
+</details>
+<pre><code>[1] 616.6048</code></pre>
+<details>
+<summary>
+hide
+</summary>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://rdrr.io/pkg/AICcmodavg/man/AICc.html'>AICc</a></span><span class='op'>(</span><span class='va'>mdl3</span><span class='op'>)</span>
+</code></pre>
+</div>
+</details>
+<pre><code>[1] 613.5962</code></pre>
+<details>
+<summary>
+hide
+</summary>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'>AICcmodavg</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/AICcmodavg/man/aictab.html'>aictab</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span><span class='va'>mdl1</span>, <span class='va'>mdl2</span>, <span class='va'>mdl3</span><span class='op'>)</span><span class='op'>)</span>
+</code></pre>
+</div>
+</details>
+<pre><code>
+Model selection based on AICc:
+
+     K   AICc Delta_AICc AICcWt Cum.Wt      LL
+Mod3 7 613.60       0.00   0.78   0.78 -299.19
+Mod2 6 616.60       3.01   0.17   0.95 -301.85
+Mod1 5 619.03       5.43   0.05   1.00 -304.19</code></pre>
+</div>
+<ul>
+<li><p>AIC of model 1 = 619.0251</p></li>
+<li><p>AIC of model 2 = 616.6048</p></li>
+<li><p>AIC of model 3 = 613.5962</p></li>
+<li><p>The AIC of model 1 &gt; model 2 &gt; model 3.</p></li>
+<li><p>Model 3 is lower than model 2 by 3.01 and lower than model 1 by 5.43, so since it is lower by at least 2, model 3 is the preferred model.</p></li>
+<li><p>Model 3 is the preferred model via the AIC method.</p></li>
+</ul>
+<h3 id="use-10-fold-cross-validation-to-compare-the-models">Use 10-fold cross validation to compare the models</h3>
+<p>Root-mean-square error is the scoring method.</p>
+<div class="layout-chunk" data-layout="l-body">
+<details>
+<summary>
+hide
+</summary>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>folds</span> <span class='op'>&lt;-</span> <span class='fl'>10</span> <span class='co'># number of folds</span>
+<span class='va'>fold_vec</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='va'>folds</span>, length.out <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span><span class='op'>(</span><span class='va'>seawater_clean</span><span class='op'>)</span><span class='op'>)</span> <span class='co'># fold vector is repeating over each fold</span>
+<span class='fu'><a href='https://rdrr.io/r/base/table.html'>table</a></span><span class='op'>(</span><span class='va'>fold_vec</span><span class='op'>)</span>
+</code></pre>
+</div>
+</details>
+<pre><code>fold_vec
+ 1  2  3  4  5  6  7  8  9 10 
+10 10 10 10 10 10 10 10 10 10 </code></pre>
+<details>
+<summary>
+hide
+</summary>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span><span class='op'>(</span><span class='fl'>42</span><span class='op'>)</span> <span class='co'># allows others to get same set of random numbers if they try to replicate this work</span>
+
+<span class='va'>seawater_fold</span> <span class='op'>&lt;-</span> <span class='va'>seawater_clean</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>group <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span><span class='op'>(</span><span class='va'>fold_vec</span>, size <span class='op'>=</span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/context.html'>n</a></span><span class='op'>(</span><span class='op'>)</span>, replace <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span><span class='op'>)</span>
+</code></pre>
+</div>
+</details>
+</div>
+<p>Create root-mean-square error function.</p>
+<div class="layout-chunk" data-layout="l-body">
+<details>
+<summary>
+hide
+</summary>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>calc_rmse</span> <span class='op'>&lt;-</span> <span class='kw'>function</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>y</span><span class='op'>)</span> <span class='op'>{</span>
+  <span class='va'>rmse_result</span> <span class='op'>&lt;-</span> <span class='op'>(</span><span class='va'>x</span><span class='op'>-</span><span class='va'>y</span><span class='op'>)</span><span class='op'>^</span><span class='fl'>2</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> <span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> <span class='fu'><a href='https://rdrr.io/r/base/MathFun.html'>sqrt</a></span><span class='op'>(</span><span class='op'>)</span>
+  <span class='kw'><a href='https://rdrr.io/r/base/function.html'>return</a></span><span class='op'>(</span><span class='va'>rmse_result</span><span class='op'>)</span>
+<span class='op'>}</span>
+</code></pre>
+</div>
+</details>
+</div>
+<p>Calculate over all folds and take the average.</p>
+<div class="layout-chunk" data-layout="l-body">
+<details>
+<summary>
+hide
+</summary>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>rmse_df</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span><span class='op'>)</span> <span class='co'># Create a blank data frame.</span>
+
+<span class='co'># Below is a for loop - loops through all 10 folds.</span>
+<span class='kw'>for</span><span class='op'>(</span><span class='va'>i</span> <span class='kw'>in</span> <span class='fl'>1</span><span class='op'>:</span><span class='va'>folds</span><span class='op'>)</span> <span class='op'>{</span>
+  <span class='va'>kfold_test_df</span> <span class='op'>&lt;-</span><span class='va'>seawater_fold</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+    <span class='fu'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span><span class='op'>(</span><span class='va'>group</span> <span class='op'>==</span> <span class='va'>i</span><span class='op'>)</span> <span class='co'># in group i</span>
+  <span class='va'>kfold_train_df</span> <span class='op'>&lt;-</span><span class='va'>seawater_fold</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+    <span class='fu'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span><span class='op'>(</span><span class='va'>group</span> <span class='op'>!=</span> <span class='va'>i</span><span class='op'>)</span> <span class='co'># not in group i</span>
+  
+  <span class='va'>kfold_mdl1</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/lm.html'>lm</a></span><span class='op'>(</span><span class='va'>f1</span>, data <span class='op'>=</span> <span class='va'>kfold_train_df</span><span class='op'>)</span>
+  <span class='va'>kfold_mdl2</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/lm.html'>lm</a></span><span class='op'>(</span><span class='va'>f2</span>, data <span class='op'>=</span> <span class='va'>kfold_train_df</span><span class='op'>)</span>
+  <span class='va'>kfold_mdl3</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/lm.html'>lm</a></span><span class='op'>(</span><span class='va'>f3</span>, data <span class='op'>=</span> <span class='va'>kfold_train_df</span><span class='op'>)</span>
+  
+  <span class='va'>kfold_pred_df</span> <span class='op'>&lt;-</span> <span class='va'>kfold_test_df</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+    <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>mdl1 <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/stats/predict.html'>predict</a></span><span class='op'>(</span><span class='va'>kfold_mdl1</span>, <span class='va'>kfold_test_df</span><span class='op'>)</span>,
+           mdl2 <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/stats/predict.html'>predict</a></span><span class='op'>(</span><span class='va'>kfold_mdl2</span>, <span class='va'>.</span><span class='op'>)</span>, <span class='co'># the period is a shortcut that says you are predicting on the data frame</span>
+           mdl3 <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/stats/predict.html'>predict</a></span><span class='op'>(</span><span class='va'>kfold_mdl3</span>, <span class='va'>.</span><span class='op'>)</span><span class='op'>)</span> 
+  <span class='va'>kfold_rmse</span> <span class='op'>&lt;-</span> <span class='va'>kfold_pred_df</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+    <span class='fu'><a href='https://dplyr.tidyverse.org/reference/summarise.html'>summarize</a></span><span class='op'>(</span>rmse_mdl1 <span class='op'>=</span> <span class='fu'>calc_rmse</span><span class='op'>(</span><span class='va'>mdl1</span>, <span class='va'>o2sat</span><span class='op'>)</span>,
+              rmse_mdl2 <span class='op'>=</span> <span class='fu'>calc_rmse</span><span class='op'>(</span><span class='va'>mdl2</span>, <span class='va'>o2sat</span><span class='op'>)</span>,
+              rmse_mdl3 <span class='op'>=</span> <span class='fu'>calc_rmse</span><span class='op'>(</span><span class='va'>mdl3</span>, <span class='va'>o2sat</span><span class='op'>)</span><span class='op'>)</span>
+  
+  <span class='co'>#Store the last chunk above by combining with the blank data frame from above.</span>
+  <span class='va'>rmse_df</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/bind.html'>bind_rows</a></span><span class='op'>(</span><span class='va'>rmse_df</span>, <span class='va'>kfold_rmse</span><span class='op'>)</span>
+<span class='op'>}</span>
+
+<span class='va'>rmse_df</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/summarise.html'>summarize</a></span><span class='op'>(</span>mean_rmse_mdl1 <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span><span class='op'>(</span><span class='va'>rmse_mdl1</span><span class='op'>)</span>,
+            mean_rmse_mdl2 <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span><span class='op'>(</span><span class='va'>rmse_mdl2</span><span class='op'>)</span>,
+            mean_rmse_mdl3 <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span><span class='op'>(</span><span class='va'>rmse_mdl3</span><span class='op'>)</span><span class='op'>)</span>
+</code></pre>
+</div>
+</details>
+<pre><code>  mean_rmse_mdl1 mean_rmse_mdl2 mean_rmse_mdl3
+1       4.976605       4.876322       4.795063</code></pre>
+</div>
+<ul>
+<li><p>Model 1 RMSE = 4.976605</p></li>
+<li><p>Model 2 RMSE = 4.876322</p></li>
+<li><p>Model 3 RMSE = 4.795063</p></li>
+<li><p>Model 3 has the lowest root-mean-square error meaning it has the lowest error when predicting data.</p></li>
+<li><p>Model 3 is the preferred model via the k-fold cross validation method using RMSE scoring.</p></li>
+</ul>
+<p><strong>Both AIC and k-fold cross validation using root-mean-square error as the scoring method indicate model 3 to be the preferred model.</strong></p>
+<h3 id="the-coefficients-for-the-final-predictive-model-are-identified">The coefficients for the final predictive model are identified:</h3>
+<div class="layout-chunk" data-layout="l-body">
+<details>
+<summary>
+hide
+</summary>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>final_mdl</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/lm.html'>lm</a></span><span class='op'>(</span><span class='va'>f3</span>, data <span class='op'>=</span> <span class='va'>seawater_clean</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span><span class='op'>(</span><span class='va'>final_mdl</span><span class='op'>)</span>
+</code></pre>
+</div>
+</details>
+<pre><code>
+Call:
+lm(formula = f3, data = seawater_clean)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-25.3273  -2.3744   0.0158   2.3748  19.4893 
+
+Coefficients:
+             Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept) 149.93538   93.39120   1.605   0.1117    
+temp         -0.46764    0.41548  -1.126   0.2632    
+salinity     -0.78711    2.92993  -0.269   0.7888    
+phosphate   -37.37466    2.45287 -15.237   &lt;2e-16 ***
+nitrite      14.66437    6.46880   2.267   0.0257 *  
+depth        -0.01789    0.01591  -1.124   0.2637    
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+Residual standard error: 4.972 on 94 degrees of freedom
+Multiple R-squared:  0.9597,    Adjusted R-squared:  0.9575 
+F-statistic: 447.1 on 5 and 94 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+<h3 id="the-final-model">The final model:</h3>
+<p><span class="math display">\[
+\begin{aligned}
+\operatorname{o2sat} &amp;= \alpha + \beta_{1}(\operatorname{temp}) + \beta_{2}(\operatorname{salinity}) + \beta_{3}(\operatorname{phosphate})\ + \\
+&amp;\quad \beta_{4}(\operatorname{nitrite}) + \beta_{5}(\operatorname{depth}) + \epsilon
+\end{aligned}
+\]</span></p>
+<p>Where:</p>
+<ul>
+<li><p>o2sat = oxygen saturation</p></li>
+<li><p>temp = water temperature in degrees Celsius</p></li>
+<li><p>salinity = salinity of the water</p></li>
+<li><p>phosphate = phosphate concentration in micro moles per liter</p></li>
+<li><p>nitrite = nitrite concentration in micro moles per liter</p></li>
+<li><p>depth = depth in meters</p></li>
+</ul>
+<h3 id="the-final-model-with-numbers">The final model with numbers:</h3>
+<p><span class="math display">\[
+\begin{aligned}
+\operatorname{\widehat{o2sat}} &amp;= 149.94 - 0.47(\operatorname{temp}) - 0.79(\operatorname{salinity}) - 37.37(\operatorname{phosphate})\ + \\
+&amp;\quad 14.66(\operatorname{nitrite}) - 0.02(\operatorname{depth})
+\end{aligned}
+\]</span></p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>
@@ -2589,6 +2716,15 @@ function init_posts_list() {
 <div class="d-appendix">
 </div>
 
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
 
 <!--radix_placeholder_site_after_body-->
 <!--/radix_placeholder_site_after_body-->

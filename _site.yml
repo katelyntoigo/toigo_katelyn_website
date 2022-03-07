@@ -11,14 +11,10 @@ navbar:
       href: Resume.html
     - text: "Projects"
       menu:
-        - text: "Project 1"
-          href: projects.html
-        - text: "Project 2"
-          href: projects.html
-        - text: "Project 3"
-          href: projects.html
-        - text: "Project 4"
-          href: projects.html
+      - text: 'Project 1'
+        href: proj1.html
+      - text: 'Project 2'
+        href: proj2.html
     - text: "Blog"
       href: blog.html
 output: distill::distill_article
