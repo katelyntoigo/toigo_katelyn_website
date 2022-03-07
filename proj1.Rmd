@@ -7,6 +7,13 @@ output:
     code_folding: hide
 ---
 
+## Principal Components Analysis to Analyze Food Nutrients
+
+### Overview
+This script uses principal components analysis to analyze nutrient information for raw fruits and vegetables from the USDA National Nutrient Database (FoodDataCentral). Principal components analysis is an ordination method allowing us to understand as much about our multivariate data as possible in a simplified number of dimensions. Here, I'll use the `nutrients` data from the USDA to explore variable relationships and clustering. I will only use the measurements that are in grams (protein, fat, carbohydrates, sugar, fiber), and I will only look at restaurant foods, baked products, and beef products.
+
+**Data citation:** United States Department of Agriculture. https://fdc.nal.usda.gov/index.html
+
 ```{r setup, include = TRUE, message = FALSE, warning = FALSE}
 knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 library(tidyverse)
@@ -15,13 +22,6 @@ library(ggfortify) # For PCA biplot
 library(patchwork)
 library(broom)
 ```
-
-## Principal Components Analysis to Analyze Food Nutrients
-
-### Overview
-This script uses principal components analysis to analyze nutrient information for raw fruits and vegetables from the USDA National Nutrient Database (FoodDataCentral). Principal components analysis is an ordination method allowing us to understand as much about our multivariate data as possible in a simplified number of dimensions. Here, I'll use the `nutrients` data from the USDA to explore variable relationships and clustering. I will only use the measurements that are in grams (protein, fat, carbohydrates, sugar, fiber), and I will only look at restaurant foods, baked products, and beef products.
-
-**Data citation:** United States Department of Agriculture. https://fdc.nal.usda.gov/index.html
 
 ### Read in the data
 ```{r}

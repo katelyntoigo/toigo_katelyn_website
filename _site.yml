@@ -15,6 +15,10 @@ navbar:
         href: proj1.html
       - text: 'Project 2'
         href: proj2.html
+      - text: 'Project 3'
+        href: proj3.html
+      - text: 'Project 4'
+        href: proj4.html
     - text: "Blog"
       href: blog.html
 output: distill::distill_article

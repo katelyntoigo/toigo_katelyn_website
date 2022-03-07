@@ -87,29 +87,29 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
 
   <!--radix_placeholder_meta_tags-->
-  <title>Katelyn Toigo: PCA</title>
+  <title>Katelyn Toigo: Text Analysis</title>
 
-  <meta property="description" itemprop="description" content="Analysis of Food Nutrients"/>
+  <meta property="description" itemprop="description" content="2021 IPCC Report Analysis"/>
 
 
 
   <!--  https://developers.facebook.com/docs/sharing/webmasters#markup -->
-  <meta property="og:title" content="Katelyn Toigo: PCA"/>
+  <meta property="og:title" content="Katelyn Toigo: Text Analysis"/>
   <meta property="og:type" content="article"/>
-  <meta property="og:description" content="Analysis of Food Nutrients"/>
+  <meta property="og:description" content="2021 IPCC Report Analysis"/>
   <meta property="og:locale" content="en_US"/>
   <meta property="og:site_name" content="Katelyn Toigo"/>
 
   <!--  https://dev.twitter.com/cards/types/summary -->
   <meta property="twitter:card" content="summary"/>
-  <meta property="twitter:title" content="Katelyn Toigo: PCA"/>
-  <meta property="twitter:description" content="Analysis of Food Nutrients"/>
+  <meta property="twitter:title" content="Katelyn Toigo: Text Analysis"/>
+  <meta property="twitter:description" content="2021 IPCC Report Analysis"/>
 
   <!--/radix_placeholder_meta_tags-->
   <!--radix_placeholder_rmarkdown_metadata-->
 
   <script type="text/json" id="radix-rmarkdown-metadata">
-  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","output"]}},"value":[{"type":"character","attributes":{},"value":["PCA"]},{"type":"character","attributes":{},"value":["Analysis of Food Nutrients\n"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["code_folding"]}},"value":[{"type":"character","attributes":{},"value":["hide"]}]}]}]}
+  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","output"]}},"value":[{"type":"character","attributes":{},"value":["Text Analysis"]},{"type":"character","attributes":{},"value":["2021 IPCC Report Analysis\n"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["code_folding"]}},"value":[{"type":"character","attributes":{},"value":["hide"]}]}]}]}
   </script>
   <!--/radix_placeholder_rmarkdown_metadata-->
   <!--radix_placeholder_navigation_in_header-->
@@ -2382,7 +2382,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <!--radix_placeholder_front_matter-->
 
 <script id="distill-front-matter" type="text/json">
-{"title":"PCA","description":"Analysis of Food Nutrients","authors":[]}
+{"title":"Text Analysis","description":"2021 IPCC Report Analysis","authors":[]}
 </script>
 
 <!--/radix_placeholder_front_matter-->
@@ -2419,18 +2419,19 @@ Projects
 <!--/radix_placeholder_site_before_body-->
 
 <div class="d-title">
-<h1>PCA</h1>
+<h1>Text Analysis</h1>
 <!--radix_placeholder_categories-->
 <!--/radix_placeholder_categories-->
-<p><p>Analysis of Food Nutrients</p></p>
+<p><p>2021 IPCC Report Analysis</p></p>
 </div>
 
 
 <div class="d-article">
-<h2 id="principal-components-analysis-to-analyze-food-nutrients">Principal Components Analysis to Analyze Food Nutrients</h2>
+<h2 id="text-analysis-of-2021-ipcc-summary-for-policymakers-report">Text Analysis of 2021 IPCC Summary for Policymakers Report</h2>
 <h3 id="overview">Overview</h3>
-<p>This script uses principal components analysis to analyze nutrient information for raw fruits and vegetables from the USDA National Nutrient Database (FoodDataCentral). Principal components analysis is an ordination method allowing us to understand as much about our multivariate data as possible in a simplified number of dimensions. Here, I’ll use the <code>nutrients</code> data from the USDA to explore variable relationships and clustering. I will only use the measurements that are in grams (protein, fat, carbohydrates, sugar, fiber), and I will only look at restaurant foods, baked products, and beef products.</p>
-<p><strong>Data citation:</strong> United States Department of Agriculture. <a href="https://fdc.nal.usda.gov/index.html" class="uri">https://fdc.nal.usda.gov/index.html</a></p>
+<p>This script uses R to conduct a text analysis of the 2021 Intergovernmental Panel on Climate Change (IPCC) Summary for Policymakers report.</p>
+<p>First, data is wrangled to get tokens into tidy format and remove stop words, next counts for the most frequently used words in the text are visualized, then a sentiment analysis using the NRC lexicon is performed.</p>
+<p><strong>Data citation:</strong> IPCC, 2021: Summary for Policymakers. In: Climate Change 2021: The Physical Science Basis. Contribution of Working Group I to the Sixth Assessment Report of the Intergovernmental Panel on Climate Change [Masson- Delmotte, V., P. Zhai, A. Pirani, S.L. Connors, C. Péan, S. Berger, N. Caud, Y. Chen, L. Goldfarb, M.I. Gomis, M. Huang, K. Leitzell, E. Lonnoy, J.B.R. Matthews, T.K. Maycock, T. Waterfield, O. Yelekçi, R. Yu, and B. Zhou (eds.)]. Cambridge University Press. In Press. <a href="https://www.ipcc.ch/report/ar6/wg1/downloads/report/IPCC_AR6_WGI_SPM_final.pdf" class="uri">https://www.ipcc.ch/report/ar6/wg1/downloads/report/IPCC_AR6_WGI_SPM_final.pdf</a></p>
 <div class="layout-chunk" data-layout="l-body">
 <details>
 <summary>
@@ -2439,88 +2440,148 @@ hide
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='fu'>knitr</span><span class='fu'>::</span><span class='va'><a href='https://rdrr.io/pkg/knitr/man/opts_chunk.html'>opts_chunk</a></span><span class='op'>$</span><span class='fu'>set</span><span class='op'>(</span>echo <span class='op'>=</span> <span class='cn'>TRUE</span>, message <span class='op'>=</span> <span class='cn'>FALSE</span>, warning <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
 <span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://tidyverse.tidyverse.org'>tidyverse</a></span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://github.com/juliasilge/tidytext'>tidytext</a></span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://github.com/EmilHvitfeldt/textdata'>textdata</a></span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://docs.ropensci.org/pdftools/'>pdftools</a></span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://github.com/lepennec/ggwordcloud'>ggwordcloud</a></span><span class='op'>)</span>
 <span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://here.r-lib.org/'>here</a></span><span class='op'>)</span>
-<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://github.com/sinhrks/ggfortify'>ggfortify</a></span><span class='op'>)</span> <span class='co'># For PCA biplot</span>
-<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://patchwork.data-imaginist.com'>patchwork</a></span><span class='op'>)</span>
-<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://broom.tidymodels.org/'>broom</a></span><span class='op'>)</span>
 </code></pre>
 </div>
 </details>
 </div>
-<h3 id="read-in-the-data">Read in the data</h3>
+<h3 id="load-the-2021-ipcc-report">Load the 2021 IPCC Report</h3>
 <div class="layout-chunk" data-layout="l-body">
 <details>
 <summary>
 hide
 </summary>
 <div class="sourceCode">
-<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>nutrients</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://readr.tidyverse.org/reference/read_delim.html'>read_csv</a></span><span class='op'>(</span><span class='fu'><a href='https://here.r-lib.org//reference/here.html'>here</a></span><span class='op'>(</span><span class='st'>"data"</span>, <span class='st'>"usda_nutrients.csv"</span><span class='op'>)</span><span class='op'>)</span>
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>ipcc_text</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://docs.ropensci.org/pdftools/reference/pdftools.html'>pdf_text</a></span><span class='op'>(</span><span class='fu'><a href='https://here.r-lib.org//reference/here.html'>here</a></span><span class='op'>(</span><span class='st'>'data'</span>, <span class='st'>'IPCC_2021pdf.pdf'</span><span class='op'>)</span><span class='op'>)</span>
 </code></pre>
 </div>
 </details>
 </div>
-<h3 id="filter-the-data">Filter the data</h3>
+<h3 id="get-the-ipcc-report-into-a-dataframe-and-remove-stop-words">Get the IPCC report into a dataframe and remove stop words</h3>
 <div class="layout-chunk" data-layout="l-body">
 <details>
 <summary>
 hide
 </summary>
 <div class="sourceCode">
-<pre class="sourceCode r"><code class="sourceCode r"><span class='co'># Filter food groups for restaurant foods, baked products, and beef products.</span>
-<span class='va'>nutrients_filter</span> <span class='op'>&lt;-</span> <span class='va'>nutrients</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
-  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span><span class='op'>(</span><span class='va'>FoodGroup</span> <span class='op'>==</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"Restaurant Foods"</span>, <span class='st'>"Baked Products"</span>, <span class='st'>"Beef Products"</span><span class='op'>)</span><span class='op'>)</span>
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>ipcc_lines</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span><span class='va'>ipcc_text</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>page <span class='op'>=</span> <span class='fl'>1</span><span class='op'>:</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/context.html'>n</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>text_full <span class='op'>=</span> <span class='fu'><a href='https://stringr.tidyverse.org/reference/str_split.html'>str_split</a></span><span class='op'>(</span><span class='va'>ipcc_text</span>, pattern <span class='op'>=</span> <span class='st'>'\\n'</span><span class='op'>)</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='fu'><a href='https://tidyr.tidyverse.org/reference/nest.html'>unnest</a></span><span class='op'>(</span><span class='va'>text_full</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>text_full <span class='op'>=</span> <span class='fu'><a href='https://stringr.tidyverse.org/reference/str_trim.html'>str_trim</a></span><span class='op'>(</span><span class='va'>text_full</span><span class='op'>)</span><span class='op'>)</span> 
+
+
+<span class='va'>ipcc_words</span> <span class='op'>&lt;-</span> <span class='va'>ipcc_lines</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='fu'><a href='https://rdrr.io/pkg/tidytext/man/unnest_tokens.html'>unnest_tokens</a></span><span class='op'>(</span><span class='va'>word</span>, <span class='va'>text_full</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='op'>(</span><span class='op'>-</span><span class='va'>ipcc_text</span><span class='op'>)</span>
+
+<span class='co'># Remove stop words</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span><span class='op'>(</span><span class='va'>stop_words</span><span class='op'>)</span>
+</code></pre>
+</div>
+</details>
+<pre><code># A tibble: 6 × 2
+  word      lexicon
+  &lt;chr&gt;     &lt;chr&gt;  
+1 a         SMART  
+2 a&#39;s       SMART  
+3 able      SMART  
+4 about     SMART  
+5 above     SMART  
+6 according SMART  </code></pre>
+<details>
+<summary>
+hide
+</summary>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>ipcc_words_clean</span> <span class='op'>&lt;-</span> <span class='va'>ipcc_words</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/filter-joins.html'>anti_join</a></span><span class='op'>(</span><span class='va'>stop_words</span>, by <span class='op'>=</span> <span class='st'>'word'</span><span class='op'>)</span>
 </code></pre>
 </div>
 </details>
 </div>
-<h3 id="run-the-pca">Run the PCA</h3>
 <div class="layout-chunk" data-layout="l-body">
 <details>
 <summary>
 hide
 </summary>
 <div class="sourceCode">
-<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>nutrients_pca</span> <span class='op'>&lt;-</span> <span class='va'>nutrients_filter</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
-  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='op'>(</span><span class='fu'><a href='https://tidyselect.r-lib.org/reference/starts_with.html'>ends_with</a></span><span class='op'>(</span><span class='st'>'_g'</span><span class='op'>)</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
-  <span class='fu'><a href='https://rdrr.io/r/base/scale.html'>scale</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> <span class='co'># scale the selected variables and pass to the prcomp() function</span>
-  <span class='fu'><a href='https://rdrr.io/r/stats/prcomp.html'>prcomp</a></span><span class='op'>(</span><span class='op'>)</span>
+<pre class="sourceCode r"><code class="sourceCode r"><span class='co'># Count</span>
+<span class='va'>nonstop_ipcc_counts</span> <span class='op'>&lt;-</span> <span class='va'>ipcc_words_clean</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/count.html'>count</a></span><span class='op'>(</span><span class='va'>page</span>, <span class='va'>word</span><span class='op'>)</span>
 </code></pre>
 </div>
 </details>
 </div>
-<h3 id="create-a-biplot-using-autoplot">Create a biplot using autoplot</h3>
+<h3 id="find-the-top-15-words-from-the-document">Find the top 15 words from the document</h3>
 <div class="layout-chunk" data-layout="l-body">
 <details>
 <summary>
 hide
 </summary>
 <div class="sourceCode">
-<pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/autoplot.html'>autoplot</a></span><span class='op'>(</span><span class='va'>nutrients_pca</span>,
-       data <span class='op'>=</span> <span class='va'>nutrients_filter</span>,
-       loadings <span class='op'>=</span> <span class='cn'>TRUE</span>,
-       colour <span class='op'>=</span> <span class='st'>'FoodGroup'</span>, <span class='co'># colour needs to be British spelling</span>
-       loadings.label <span class='op'>=</span> <span class='cn'>TRUE</span>,
-       loadings.colour <span class='op'>=</span> <span class='st'>"black"</span>,
-       loadings.label.colour <span class='op'>=</span> <span class='st'>"black"</span>,
-       loadings.label.vjust <span class='op'>=</span> <span class='op'>-</span><span class='fl'>0.5</span><span class='op'>)</span> <span class='op'>+</span>
-  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggtheme.html'>theme_classic</a></span><span class='op'>(</span><span class='op'>)</span>
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>top15</span> <span class='op'>&lt;-</span> <span class='va'>nonstop_ipcc_counts</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/arrange.html'>arrange</a></span><span class='op'>(</span><span class='op'>-</span><span class='va'>n</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/slice.html'>slice</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>15</span><span class='op'>)</span>
+
+
+<span class='va'>cloud</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span>data <span class='op'>=</span> <span class='va'>top15</span>, 
+                     <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>label <span class='op'>=</span> <span class='va'>word</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://lepennec.github.io/ggwordcloud/reference/geom_text_wordcloud.html'>geom_text_wordcloud</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>color <span class='op'>=</span> <span class='va'>n</span>, size <span class='op'>=</span> <span class='va'>n</span><span class='op'>)</span>, shape <span class='op'>=</span> <span class='st'>"diamond"</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_size.html'>scale_size_area</a></span><span class='op'>(</span>max_size <span class='op'>=</span> <span class='fl'>6</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_gradient.html'>scale_color_gradientn</a></span><span class='op'>(</span>colors <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"darkgreen"</span>,<span class='st'>"blue"</span>,<span class='st'>"purple"</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggtheme.html'>theme_minimal</a></span><span class='op'>(</span><span class='op'>)</span>
+ 
+<span class='va'>cloud</span>
 </code></pre>
 </div>
 </details>
-<p><img src="proj1_files/figure-html5/unnamed-chunk-4-1.png" width="624" /></p>
+<p><img src="proj4_files/figure-html5/unnamed-chunk-4-1.png" width="624" /></p>
 </div>
-<p><strong>Figure 1.</strong> PCA biplot between PC1 and PC2 when looking at protein, fiber, carbohydrates, sugar, and fat of baked products, beef products, and restaurant foods.</p>
-<h3 id="summary">Summary</h3>
-<ul>
-<li>All three food groups seem to have distinct clusters.</li>
-<li>Beef products associate more strongly with protein than with the other nutrients.</li>
-<li>Fiber, carbs, and sugars tend to be more similar to each other than to protein. They are positively correlated.</li>
-<li>Protein is about 180 degrees different than carbs and sugars. This means they have a correlation of -1.</li>
-<li>Fiber and fat have a correlation of 0 since they are about 90 degrees.</li>
-<li>Baked products are more similar to restaurant food than beef products based on these variables.</li>
-<li>Of the three clusters, beef products and baked products are the most different.</li>
-</ul>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<p><strong>Figure 1.</strong> Wordcloud of the 15 most frequently used words in the 2021 IPCC report.</p>
+<h3 id="sentiment-analysis-with-nrc-lexicon">Sentiment analysis with NRC lexicon</h3>
+<p>NRC lexicon:<a href="https://saifmohammad.com/WebPages/NRC-Emotion-Lexicon.htm" class="uri">https://saifmohammad.com/WebPages/NRC-Emotion-Lexicon.htm</a></p>
+<p>Includes 8 emotions (anger, anticipation, disgust, fear, joy, sadness, surprise, trust).</p>
+<div class="layout-chunk" data-layout="l-body">
+<details>
+<summary>
+hide
+</summary>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='va'>ipcc_nrc</span> <span class='op'>&lt;-</span> <span class='va'>ipcc_words_clean</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate-joins.html'>inner_join</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/pkg/tidytext/man/get_sentiments.html'>get_sentiments</a></span><span class='op'>(</span><span class='st'>"nrc"</span><span class='op'>)</span><span class='op'>)</span>
+</code></pre>
+</div>
+</details>
+</div>
+<div class="layout-chunk" data-layout="l-body">
+<details>
+<summary>
+hide
+</summary>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='co'># Find the count of words by page and sentiment bin: </span>
+<span class='va'>ipcc_nrc_counts</span> <span class='op'>&lt;-</span> <span class='va'>ipcc_nrc</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/count.html'>count</a></span><span class='op'>(</span><span class='va'>page</span>, <span class='va'>sentiment</span><span class='op'>)</span>
+
+<span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span>data <span class='op'>=</span> <span class='va'>ipcc_nrc_counts</span>, <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>sentiment</span>, y <span class='op'>=</span> <span class='va'>n</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_bar.html'>geom_col</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggtheme.html'>theme_minimal</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/coord_flip.html'>coord_flip</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>+</span> 
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>ggtitle</a></span><span class='op'>(</span><span class='st'>"Sentiment Analysis of 2021 IPCC Report\nusing NRC Lexicon"</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>labs</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='st'>"Sentiment"</span>,
+       y <span class='op'>=</span> <span class='st'>"Count"</span><span class='op'>)</span>
+</code></pre>
+</div>
+</details>
+<p><img src="proj4_files/figure-html5/unnamed-chunk-6-1.png" width="624" /></p>
+</div>
+<p><strong>Figure 2.</strong> Graph of the results of a sentiment analysis, using the NRC lexicon, for the 2021 IPCC report.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>

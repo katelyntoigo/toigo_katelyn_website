@@ -1,0 +1,106 @@
+---
+title: "Text Analysis"
+description: |
+  2021 IPCC Report Analysis
+output: 
+  distill::distill_article:
+    code_folding: hide
+---
+
+## Text Analysis of 2021 IPCC Summary for Policymakers Report
+
+### Overview
+This script uses R to conduct a text analysis of the 2021 Intergovernmental Panel on Climate Change (IPCC) Summary for Policymakers report.
+
+First, data is wrangled to get tokens into tidy format and remove stop words, next counts for the most frequently used words in the text are visualized, then a sentiment analysis using the NRC lexicon is performed.
+
+**Data citation:** 
+IPCC, 2021: Summary for Policymakers. In: Climate Change 2021: The Physical Science Basis. Contribution of Working Group I to the Sixth Assessment Report of the Intergovernmental Panel on Climate Change [Masson- Delmotte, V., P. Zhai, A. Pirani, S.L. Connors, C. Péan, S. Berger, N. Caud, Y. Chen, L. Goldfarb, M.I. Gomis, M. Huang, K. Leitzell, E. Lonnoy, J.B.R. Matthews, T.K. Maycock, T. Waterfield, O. Yelekçi, R. Yu, and B. Zhou (eds.)]. Cambridge University Press. In Press. https://www.ipcc.ch/report/ar6/wg1/downloads/report/IPCC_AR6_WGI_SPM_final.pdf
+
+```{r setup, include = TRUE, message = FALSE, warning = FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+library(tidyverse)
+library(tidytext)
+library(textdata)
+library(pdftools)
+library(ggwordcloud)
+library(here)
+```
+
+### Load the 2021 IPCC Report
+```{r, cache = TRUE}
+ipcc_text <- pdf_text(here('data', 'IPCC_2021pdf.pdf'))
+```
+
+### Get the IPCC report into a dataframe and remove stop words
+```{r}
+ipcc_lines <- data.frame(ipcc_text) %>% 
+  mutate(page = 1:n()) %>%
+  mutate(text_full = str_split(ipcc_text, pattern = '\\n')) %>% 
+  unnest(text_full) %>% 
+  mutate(text_full = str_trim(text_full)) 
+
+
+ipcc_words <- ipcc_lines %>% 
+  unnest_tokens(word, text_full) %>% 
+  select(-ipcc_text)
+
+# Remove stop words
+head(stop_words)
+ 
+ipcc_words_clean <- ipcc_words %>% 
+  anti_join(stop_words, by = 'word')
+```
+
+```{r}
+# Count
+nonstop_ipcc_counts <- ipcc_words_clean %>% 
+  count(page, word)
+```
+
+### Find the top 15 words from the document
+```{r}
+top15 <- nonstop_ipcc_counts %>% 
+  arrange(-n) %>% 
+  slice(1:15)
+
+
+cloud <- ggplot(data = top15, 
+                     aes(label = word)) +
+  geom_text_wordcloud(aes(color = n, size = n), shape = "diamond") +
+  scale_size_area(max_size = 6) +
+  scale_color_gradientn(colors = c("darkgreen","blue","purple")) +
+  theme_minimal()
+ 
+cloud
+```
+
+**Figure 1.** Wordcloud of the 15 most frequently used words in the 2021 IPCC report.
+
+### Sentiment analysis with NRC lexicon
+
+NRC lexicon:https://saifmohammad.com/WebPages/NRC-Emotion-Lexicon.htm
+
+Includes 8 emotions (anger, anticipation, disgust, fear, joy, sadness, surprise, trust).
+
+```{r}
+ipcc_nrc <- ipcc_words_clean %>% 
+  inner_join(get_sentiments("nrc"))
+```
+
+```{r}
+# Find the count of words by page and sentiment bin: 
+ipcc_nrc_counts <- ipcc_nrc %>% 
+  count(page, sentiment)
+
+ggplot(data = ipcc_nrc_counts, aes(x = sentiment, y = n)) +
+  geom_col() +
+  theme_minimal() +
+  coord_flip() + 
+  ggtitle("Sentiment Analysis of 2021 IPCC Report\nusing NRC Lexicon") +
+  labs(x = "Sentiment",
+       y = "Count")
+```
+
+**Figure 2.** Graph of the results of a sentiment analysis, using the 
+NRC lexicon, for the 2021 IPCC report.

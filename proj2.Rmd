@@ -7,6 +7,13 @@ output:
     code_folding: hide
 ---
 
+## Analysis of Seawater
+
+### Overview
+This analysis will look at the relationship between oxygen saturation of seawater off California’s coast and several physical and chemical variables including oxygen saturation, water temperature, water salinity, water depth, phosphate concentration, and nitrite concentrations.
+
+Data citation: CalCOFI data are available for use without restriction. Data downloaded from https://calcofi.org/ccdata.html.  Accessed 1/10/2022.
+
 ```{r setup, include = TRUE, message = FALSE, warning = FALSE}
 knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 library(tidyverse)
@@ -14,13 +21,6 @@ library(here)
 library(AICcmodavg)
 library(equatiomatic)
 ```
-
-## Analysis of Seawater
-
-### Overview
-This analysis will look at the relationship between oxygen saturation of seawater off California’s coast and several physical and chemical variables including oxygen saturation, water temperature, water salinity, water depth, phosphate concentration, and nitrite concentrations.
-
-Data citation: CalCOFI data are available for use without restriction. Data downloaded from https://calcofi.org/ccdata.html.  Accessed 1/10/2022.
 
 ### Read in the data
 ```{r}

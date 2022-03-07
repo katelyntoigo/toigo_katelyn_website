@@ -1192,6 +1192,8 @@ Projects
 <div class="nav-dropdown-content">
 <a href="proj1.html">Project 1</a>
 <a href="proj2.html">Project 2</a>
+<a href="proj3.html">Project 3</a>
+<a href="proj4.html">Project 4</a>
 </div>
 </div>
 <a href="blog.html">Blog</a>
@@ -1237,6 +1239,12 @@ Projects
     <li>
       <a href="proj2.html">Project 2</a>
     </li>
+    <li>
+      <a href="proj3.html">Project 3</a>
+    </li>
+    <li>
+      <a href="proj4.html">Project 4</a>
+    </li>
   </ul>
 </li>
 <li>
@@ -1264,254 +1272,9 @@ Projects
 </div>
 
 
-<div id="principal-components-analysis-to-analyze-food-nutrients" class="section level2">
-<h2>1. Principal Components Analysis to Analyze Food Nutrients</h2>
-<div id="overview" class="section level3">
-<h3>Overview</h3>
-<p>This script uses principal components analysis to analyze nutrient information for raw fruits and vegetables from the USDA National Nutrient Database (FoodDataCentral). Principal components analysis is an ordination method allowing us to understand as much about our multivariate data as possible in a simplified number of dimensions. Here, I’ll use the <code>nutrients</code> data from the USDA to explore variable relationships and clustering. I will only use the measurements that are in grams (protein, fat, carbohydrates, sugar, fiber), and I will only look at restaurant foods, baked products, and beef products.</p>
-<p><strong>Data citation:</strong> United States Department of Agriculture. <a href="https://fdc.nal.usda.gov/index.html" class="uri">https://fdc.nal.usda.gov/index.html</a></p>
-</div>
-<div id="attach-required-packages" class="section level3">
-<h3>Attach required packages:</h3>
-<pre class="r"><code>knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
- 
-library(tidyverse)
-library(here)
-library(ggfortify) # For PCA biplot
-library(patchwork)
-library(broom)</code></pre>
-</div>
-<div id="read-in-the-data" class="section level3">
-<h3>Read in the data</h3>
-<pre class="r"><code>nutrients &lt;- read_csv(here(&quot;data&quot;, &quot;usda_nutrients.csv&quot;))</code></pre>
-</div>
-<div id="filter-the-data" class="section level3">
-<h3>Filter the data</h3>
-<pre class="r"><code># Filter food groups for restaurant foods, baked products, and beef products.
-nutrients_filter &lt;- nutrients %&gt;% 
-  filter(FoodGroup == c(&quot;Restaurant Foods&quot;, &quot;Baked Products&quot;, &quot;Beef Products&quot;))</code></pre>
-</div>
-<div id="run-the-pca" class="section level3">
-<h3>Run the PCA</h3>
-<pre class="r"><code>nutrients_pca &lt;- nutrients_filter %&gt;% 
-  select(ends_with(&#39;_g&#39;)) %&gt;% 
-  scale() %&gt;% # scale the selected variables and pass to the prcomp() function
-  prcomp()</code></pre>
-</div>
-<div id="create-a-biplot-using-autoplot" class="section level3">
-<h3>Create a biplot using autoplot</h3>
-<pre class="r"><code>autoplot(nutrients_pca,
-        data = nutrients_filter,
-        loadings = TRUE,
-        colour = &#39;FoodGroup&#39;, # colour needs to be British spelling
-        loadings.label = TRUE,
-        loadings.colour = &quot;black&quot;,
-        loadings.label.colour = &quot;black&quot;,
-        loadings.label.vjust = -0.5) +
-  theme_classic()</code></pre>
-<p><img src="projects_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
-<p><strong>Figure 1.</strong> PCA biplot between PC1 and PC2 when looking at protein, fiber, carbohydrates, sugar, and fat of baked products, beef products, and restaurant foods.</p>
-</div>
-<div id="summary" class="section level3">
-<h3>Summary</h3>
-<ul>
-<li>All three food groups seem to have distinct clusters.</li>
-<li>Beef products associate more strongly with protein than with the other nutrients.</li>
-<li>Fiber, carbs, and sugars tend to be more similar to each other than to protein. They are positively correlated.</li>
-<li>Protein is about 180 degrees different than carbs and sugars. This means they have a correlation of -1.</li>
-<li>Fiber and fat have a correlation of 0 since they are about 90 degrees.</li>
-<li>Baked products are more similar to restaurant food than beef products based on these variables.</li>
-<li>Of the three clusters, beef products and baked products are the most different.</li>
-</ul>
-</div>
-</div>
-<div id="analysis-of-seawater" class="section level2">
-<h2>2. Analysis of Seawater</h2>
-<div id="overview-1" class="section level3">
-<h3>Overview</h3>
-<p>This analysis will look at the relationship between oxygen saturation of seawater off California’s coast and several physical and chemical variables including oxygen saturation, water temperature, water salinity, water depth, phosphate concentration, and nitrite concentrations.</p>
-<p>Data citation: CalCOFI data are available for use without restriction. Data downloaded from <a href="https://calcofi.org/ccdata.html" class="uri">https://calcofi.org/ccdata.html</a>. Accessed 1/10/2022.</p>
-</div>
-<div id="attach-required-packages-1" class="section level3">
-<h3>Attach required packages</h3>
-<pre class="r"><code># load packages
-library(tidyverse)
-library(here)
-library(AICcmodavg)
-library(equatiomatic)</code></pre>
-</div>
-<div id="read-in-the-data-1" class="section level3">
-<h3>Read in the data</h3>
-<pre class="r"><code>seawater_samples &lt;- read_csv(here(&#39;data&#39;, &#39;calcofi_seawater_samples.csv&#39;))</code></pre>
-</div>
-<div id="clean-the-data" class="section level3">
-<h3>Clean the data</h3>
-<pre class="r"><code>seawater_clean &lt;- seawater_samples %&gt;% 
-  drop_na() %&gt;% 
-  rename(temp = t_deg_c, # variables are renamed so they are easier to work with and understand
-         depth = depth_m,
-         phosphate = po4u_m,
-         nitrite = no2u_m)</code></pre>
-</div>
-<div id="create-linear-regression-models-using-functions-to-store-the-equations" class="section level3">
-<h3>Create linear regression models using functions to store the equations</h3>
-<p>Model 1 is oxygen saturation as a function of water temperature, salinity, and phosphate concentration.</p>
-<p>Model 2 is oxygen saturation as a function of water temperature, salinity, phosphate concentration, and depth.</p>
-<p>A third model has also been added. Model 3 is oxygen saturation as a function of water temperature, salinity, phosphate concentration, nitrite concentration, and depth.</p>
-<pre class="r"><code>f1 &lt;- o2sat ~ temp + salinity + phosphate
-mdl1 &lt;- lm(f1, data = seawater_clean)
-
-f2 &lt;- o2sat ~ temp + salinity + phosphate + depth
-mdl2 &lt;- lm(f2, data = seawater_clean)
-
-f3 &lt;- o2sat ~ temp + salinity + phosphate + + nitrite + depth
-mdl3 &lt;- lm(f3, data = seawater_clean)</code></pre>
-</div>
-<div id="use-aic-to-compare-the-models" class="section level3">
-<h3>Use AIC to compare the models</h3>
-<p>AIC = Akaike Information Criterion</p>
-<p>Model with the lowest AIC is the preferred model. Ideally, the best model is lower than the next best model by at least 2.0. A difference of 2 indicates a significant difference in model fit.</p>
-<pre class="r"><code>AICc(mdl1) # AICc() corrects for sample size</code></pre>
-<pre><code>## [1] 619.0251</code></pre>
-<pre class="r"><code>AICc(mdl2)</code></pre>
-<pre><code>## [1] 616.6048</code></pre>
-<pre class="r"><code>AICc(mdl3)</code></pre>
-<pre><code>## [1] 613.5962</code></pre>
-<pre class="r"><code>AICcmodavg::aictab(list(mdl1, mdl2, mdl3))</code></pre>
-<pre><code>## 
-## Model selection based on AICc:
-## 
-##      K   AICc Delta_AICc AICcWt Cum.Wt      LL
-## Mod3 7 613.60       0.00   0.78   0.78 -299.19
-## Mod2 6 616.60       3.01   0.17   0.95 -301.85
-## Mod1 5 619.03       5.43   0.05   1.00 -304.19</code></pre>
-<ul>
-<li><p>AIC of model 1 = 619.0251</p></li>
-<li><p>AIC of model 2 = 616.6048</p></li>
-<li><p>AIC of model 3 = 613.5962</p></li>
-<li><p>The AIC of model 1 &gt; model 2 &gt; model 3.</p></li>
-<li><p>Model 3 is lower than model 2 by 3.01 and lower than model 1 by 5.43, so since it is lower by at least 2, model 3 is the preferred model.</p></li>
-<li><p>Model 3 is the preferred model via the AIC method.</p></li>
-</ul>
-</div>
-<div id="use-10-fold-cross-validation-to-compare-the-models" class="section level3">
-<h3>Use 10-fold cross validation to compare the models</h3>
-<p>Root-mean-square error is the scoring method.</p>
-<pre class="r"><code>folds &lt;- 10 # number of folds
-fold_vec &lt;- rep(1:folds, length.out = nrow(seawater_clean)) # fold vector is repeating over each fold
-table(fold_vec)</code></pre>
-<pre><code>## fold_vec
-##  1  2  3  4  5  6  7  8  9 10 
-## 10 10 10 10 10 10 10 10 10 10</code></pre>
-<pre class="r"><code>set.seed(42) # allows others to get same set of random numbers if they try to replicate this work
-
-seawater_fold &lt;- seawater_clean %&gt;% 
-  mutate(group = sample(fold_vec, size = n(), replace = FALSE))</code></pre>
-<p>Create root-mean-square error function.</p>
-<pre class="r"><code>calc_rmse &lt;- function(x, y) {
-  rmse_result &lt;- (x-y)^2 %&gt;% mean() %&gt;% sqrt()
-  return(rmse_result)
-}</code></pre>
-<p>Calculate over all folds and take the average.</p>
-<pre class="r"><code>rmse_df &lt;- data.frame() # Create a blank data frame.
-
-# Below is a for loop - loops through all 10 folds.
-for(i in 1:folds) {
-  kfold_test_df &lt;-seawater_fold %&gt;% 
-    filter(group == i) # in group i
-  kfold_train_df &lt;-seawater_fold %&gt;% 
-    filter(group != i) # not in group i
-  
-  kfold_mdl1 &lt;- lm(f1, data = kfold_train_df)
-  kfold_mdl2 &lt;- lm(f2, data = kfold_train_df)
-  kfold_mdl3 &lt;- lm(f3, data = kfold_train_df)
-  
-  kfold_pred_df &lt;- kfold_test_df %&gt;% 
-    mutate(mdl1 = predict(kfold_mdl1, kfold_test_df),
-           mdl2 = predict(kfold_mdl2, .), # the period is a shortcut that says you are predicting on the data frame
-           mdl3 = predict(kfold_mdl3, .)) 
-  kfold_rmse &lt;- kfold_pred_df %&gt;% 
-    summarize(rmse_mdl1 = calc_rmse(mdl1, o2sat),
-              rmse_mdl2 = calc_rmse(mdl2, o2sat),
-              rmse_mdl3 = calc_rmse(mdl3, o2sat))
-  
-  #Store the last chunk above by combining with the blank data frame from above.
-  rmse_df &lt;- bind_rows(rmse_df, kfold_rmse)
-}
-
-rmse_df %&gt;% 
-  summarize(mean_rmse_mdl1 = mean(rmse_mdl1),
-            mean_rmse_mdl2 = mean(rmse_mdl2),
-            mean_rmse_mdl3 = mean(rmse_mdl3))</code></pre>
-<pre><code>##   mean_rmse_mdl1 mean_rmse_mdl2 mean_rmse_mdl3
-## 1       4.976605       4.876322       4.795063</code></pre>
-<ul>
-<li><p>Model 1 RMSE = 4.976605</p></li>
-<li><p>Model 2 RMSE = 4.876322</p></li>
-<li><p>Model 3 RMSE = 4.795063</p></li>
-<li><p>Model 3 has the lowest root-mean-square error meaning it has the lowest error when predicting data.</p></li>
-<li><p>Model 3 is the preferred model via the k-fold cross validation method using RMSE scoring.</p></li>
-</ul>
-<p><strong>Both AIC and k-fold cross validation using root-mean-square error as the scoring method indicate model 3 to be the preferred model.</strong></p>
-</div>
-<div id="the-coefficients-for-the-final-predictive-model-are-identified" class="section level3">
-<h3>The coefficients for the final predictive model are identified:</h3>
-<pre class="r"><code>final_mdl &lt;- lm(f3, data = seawater_clean)
-summary(final_mdl)</code></pre>
-<pre><code>## 
-## Call:
-## lm(formula = f3, data = seawater_clean)
-## 
-## Residuals:
-##      Min       1Q   Median       3Q      Max 
-## -25.3273  -2.3744   0.0158   2.3748  19.4893 
-## 
-## Coefficients:
-##              Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept) 149.93538   93.39120   1.605   0.1117    
-## temp         -0.46764    0.41548  -1.126   0.2632    
-## salinity     -0.78711    2.92993  -0.269   0.7888    
-## phosphate   -37.37466    2.45287 -15.237   &lt;2e-16 ***
-## nitrite      14.66437    6.46880   2.267   0.0257 *  
-## depth        -0.01789    0.01591  -1.124   0.2637    
-## ---
-## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
-## 
-## Residual standard error: 4.972 on 94 degrees of freedom
-## Multiple R-squared:  0.9597, Adjusted R-squared:  0.9575 
-## F-statistic: 447.1 on 5 and 94 DF,  p-value: &lt; 2.2e-16</code></pre>
-</div>
-<div id="the-final-model" class="section level3">
-<h3>The final model:</h3>
-<p><span class="math display">\[
-\begin{aligned}
-\operatorname{o2sat} &amp;= \alpha + \beta_{1}(\operatorname{temp}) + \beta_{2}(\operatorname{salinity}) + \beta_{3}(\operatorname{phosphate})\ + \\
-&amp;\quad \beta_{4}(\operatorname{nitrite}) + \beta_{5}(\operatorname{depth}) + \epsilon
-\end{aligned}
-\]</span></p>
-<p>Where:</p>
-<ul>
-<li><p>o2sat = oxygen saturation</p></li>
-<li><p>temp = water temperature in degrees Celsius</p></li>
-<li><p>salinity = salinity of the water</p></li>
-<li><p>phosphate = phosphate concentration in micro moles per liter</p></li>
-<li><p>nitrite = nitrite concentration in micro moles per liter</p></li>
-<li><p>depth = depth in meters</p></li>
-</ul>
-</div>
-<div id="the-final-model-with-numbers" class="section level3">
-<h3>The final model with numbers:</h3>
-<p><span class="math display">\[
-\begin{aligned}
-\operatorname{\widehat{o2sat}} &amp;= 149.94 - 0.47(\operatorname{temp}) - 0.79(\operatorname{salinity}) - 37.37(\operatorname{phosphate})\ + \\
-&amp;\quad 14.66(\operatorname{nitrite}) - 0.02(\operatorname{depth})
-\end{aligned}
-\]</span></p>
-</div>
-</div>
 <div id="binary-logistic-regression-to-identify-palmetto-species" class="section level2">
 <h2>3. Binary Logistic Regression to Identify Palmetto Species</h2>
-<div id="overview-2" class="section level3">
+<div id="overview" class="section level3">
 <h3>Overview</h3>
 <p>This script uses variables such as plant height, canopy length, canopy width, and the number of green leaves to classify whether palmettos are of species <em>Serenoa repens</em> or <em>Sabal etonia</em>. Binary logistic regression is used to test feasibility.</p>
 <p>Data was collected from 1981 to 2017 in south-central Florida. It includes information regarding year, plant type, species, site, habitat, treatment, survival, height, canopy length, canopy width, number of green leaves, scape, new leaves, canopy, if long, comments, and biomass.</p>
@@ -1526,6 +1289,14 @@ library(AICcmodavg)
 library(data.table)
 library(knitr)</code></pre>
 <pre class="r"><code>palmetto &lt;- read_csv(here(&quot;data&quot;, &quot;palmetto.csv&quot;)) # Read in the data</code></pre>
+<pre><code>## Rows: 12460 Columns: 17</code></pre>
+<pre><code>## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## chr  (1): comments
+## dbl (16): year, plant, species, site, habitat, treatment, survival, height, ...</code></pre>
+<pre><code>## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
 </div>
 <div id="wrangle-the-data" class="section level3">
 <h3>Wrangle the data</h3>
@@ -1552,7 +1323,7 @@ palmetto_clean$species &lt;- as.factor(palmetto_clean$species)
        y = &#39;Canopy Length (cm)&#39;, 
        color = &quot;Species&quot;) + # title, axis labels, and legend title
   theme_minimal() # sets the theme of the graph - for visual purposes</code></pre>
-<p><img src="projects_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
+<p><img src="projects_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 <p><strong>Figure 1.</strong> The relationship between canopy length (cm) and maximum plant height (cm) is shown for each species. <em>Sabal etonia</em> is shown in red. <em>Serenoa repens</em> is shown in blue.</p>
 <pre class="r"><code>ggplot(data = palmetto_clean, aes(x = width, y = green_lvs)) +
   geom_point(aes(color = species)) + 
@@ -1561,7 +1332,7 @@ x = &#39;Canopy Width (cm)&#39;,
 y = &#39;Number of Green Leaves&#39;, 
 color = &quot;Species&quot;) + # title, axis labels, and legend title
   theme_minimal() # sets the theme of the graph - for visual purposes</code></pre>
-<p><img src="projects_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
+<p><img src="projects_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 <p><strong>Figure 2.</strong> The relationship between the number of green leaves and canopy width (cm) is shown for each species. <em>Sabal etonia</em> is shown in red. <em>Serenoa repens</em> is shown in blue.</p>
 <p>Based on these plots, the number of green leaves is the most likely variable to help classify the species correctly. It shows the most difference between species. Canopy width, plant height, and canopy length showed similar trends between species.</p>
 </div>
@@ -1584,6 +1355,8 @@ palm_blr2 &lt;- glm(formula = f2,
 <h3>Identify which model performs better</h3>
 <p>Compare the models using AICc</p>
 <pre class="r"><code>AICcmodavg::aictab(list(palm_blr1, palm_blr2)) # this function compares competing models</code></pre>
+<pre><code>## Warning in aictab.AICglm.lm(list(palm_blr1, palm_blr2)): 
+## Model names have been supplied automatically in the table</code></pre>
 <pre><code>## 
 ## Model selection based on AICc:
 ## 
@@ -1720,7 +1493,7 @@ kable(blr1_fitted)</code></pre>
 </div>
 <div id="text-analysis-of-2021-ipcc-summary-for-policymakers-report" class="section level2">
 <h2>4. Text Analysis of 2021 IPCC Summary for Policymakers Report</h2>
-<div id="overview-3" class="section level3">
+<div id="overview-1" class="section level3">
 <h3>Overview</h3>
 <p>This script uses R to conduct a text analysis of the 2021 Intergovernmental Panel on Climate Change (IPCC) Summary for Policymakers report.</p>
 <p>First, data is wrangled to get tokens into tidy format and remove stop words, next counts for the most frequently used words in the text are visualized, then a sentiment analysis using the NRC lexicon is performed.</p>
@@ -1784,7 +1557,7 @@ cloud &lt;- ggplot(data = top15,
   theme_minimal()
  
 cloud</code></pre>
-<p><img src="projects_files/figure-html/unnamed-chunk-32-1.png" width="672" /></p>
+<p><img src="projects_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
 <p><strong>Figure 1.</strong> Wordcloud of the 15 most frequently used words in the 2021 IPCC report.</p>
 </div>
 <div id="sentiment-analysis-with-nrc-lexicon" class="section level3">
@@ -1793,6 +1566,7 @@ cloud</code></pre>
 <p>Includes 8 emotions (anger, anticipation, disgust, fear, joy, sadness, surprise, trust).</p>
 <pre class="r"><code>ipcc_nrc &lt;- ipcc_words_clean %&gt;% 
   inner_join(get_sentiments(&quot;nrc&quot;))</code></pre>
+<pre><code>## Joining, by = &quot;word&quot;</code></pre>
 <pre class="r"><code># Find the count of words by page and sentiment bin: 
 ipcc_nrc_counts &lt;- ipcc_nrc %&gt;% 
   count(page, sentiment)
@@ -1804,7 +1578,7 @@ ggplot(data = ipcc_nrc_counts, aes(x = sentiment, y = n)) +
   ggtitle(&quot;Sentiment Analysis of 2021 IPCC Report\nusing NRC Lexicon&quot;) +
   labs(x = &quot;Sentiment&quot;,
        y = &quot;Count&quot;)</code></pre>
-<p><img src="projects_files/figure-html/unnamed-chunk-34-1.png" width="672" /></p>
+<p><img src="projects_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
 <p><strong>Figure 2.</strong> Graph of the results of a sentiment analysis, using the NRC lexicon, for the 2021 IPCC report.</p>
 </div>
 </div>
