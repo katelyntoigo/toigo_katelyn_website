@@ -2429,7 +2429,7 @@ Projects
 <div class="d-article">
 <h2 id="principal-components-analysis-to-analyze-food-nutrients">Principal Components Analysis to Analyze Food Nutrients</h2>
 <h3 id="overview">Overview</h3>
-<p>This script uses principal components analysis to analyze nutrient information for raw fruits and vegetables from the USDA National Nutrient Database (FoodDataCentral). Principal components analysis is an ordination method allowing us to understand as much about our multivariate data as possible in a simplified number of dimensions. Here, I’ll use the <code>nutrients</code> data from the USDA to explore variable relationships and clustering. I will only use the measurements that are in grams (protein, fat, carbohydrates, sugar, fiber), and I will only look at restaurant foods, baked products, and beef products.</p>
+<p>This script uses principal components analysis to analyze nutrient information for raw fruits and vegetables from the USDA National Nutrient Database (FoodDataCentral). Principal components analysis is an ordination method allowing us to understand as much about our multivariate data as possible in a simplified number of dimensions. Here, I’ll use the <code>nutrients</code> data from the USDA to explore variable relationships and clustering. I will only use the measurements that are in grams (protein, fat, carbohydrates, sugar, fiber), and I will only look at restaurant foods, baked products, and beef products. These selections are made so that clear differences can be seen.</p>
 <p><strong>Data citation:</strong> United States Department of Agriculture. <a href="https://fdc.nal.usda.gov/index.html" class="uri">https://fdc.nal.usda.gov/index.html</a></p>
 <div class="layout-chunk" data-layout="l-body">
 <details>
@@ -2481,7 +2481,7 @@ hide
 </summary>
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='va'>nutrients_pca</span> <span class='op'>&lt;-</span> <span class='va'>nutrients_filter</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
-  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='op'>(</span><span class='fu'><a href='https://tidyselect.r-lib.org/reference/starts_with.html'>ends_with</a></span><span class='op'>(</span><span class='st'>'_g'</span><span class='op'>)</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='op'>(</span><span class='fu'><a href='https://tidyselect.r-lib.org/reference/starts_with.html'>ends_with</a></span><span class='op'>(</span><span class='st'>'_g'</span><span class='op'>)</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> <span class='co'># select columns that end with _g. These are the variables that are measured in grams (protein, fat, carbohydrates, sugar, fiber).</span>
   <span class='fu'><a href='https://rdrr.io/r/base/scale.html'>scale</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> <span class='co'># scale the selected variables and pass to the prcomp() function</span>
   <span class='fu'><a href='https://rdrr.io/r/stats/prcomp.html'>prcomp</a></span><span class='op'>(</span><span class='op'>)</span>
 </code></pre>
@@ -2498,11 +2498,11 @@ hide
 <pre class="sourceCode r"><code class="sourceCode r"><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/autoplot.html'>autoplot</a></span><span class='op'>(</span><span class='va'>nutrients_pca</span>,
        data <span class='op'>=</span> <span class='va'>nutrients_filter</span>,
        loadings <span class='op'>=</span> <span class='cn'>TRUE</span>,
-       colour <span class='op'>=</span> <span class='st'>'FoodGroup'</span>, <span class='co'># colour needs to be British spelling</span>
+       colour <span class='op'>=</span> <span class='st'>'FoodGroup'</span>, 
        loadings.label <span class='op'>=</span> <span class='cn'>TRUE</span>,
        loadings.colour <span class='op'>=</span> <span class='st'>"black"</span>,
-       loadings.label.colour <span class='op'>=</span> <span class='st'>"black"</span>,
-       loadings.label.vjust <span class='op'>=</span> <span class='op'>-</span><span class='fl'>0.5</span><span class='op'>)</span> <span class='op'>+</span>
+       loadings.label.colour <span class='op'>=</span> <span class='st'>"black"</span>, <span class='co'># color of the labels</span>
+       loadings.label.vjust <span class='op'>=</span> <span class='op'>-</span><span class='fl'>0.5</span><span class='op'>)</span> <span class='op'>+</span> <span class='co'># location of the labels</span>
   <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggtheme.html'>theme_classic</a></span><span class='op'>(</span><span class='op'>)</span>
 </code></pre>
 </div>
@@ -2513,9 +2513,9 @@ hide
 <h3 id="summary">Summary</h3>
 <ul>
 <li>All three food groups seem to have distinct clusters.</li>
-<li>Beef products associate more strongly with protein than with the other nutrients.</li>
-<li>Fiber, carbs, and sugars tend to be more similar to each other than to protein. They are positively correlated.</li>
-<li>Protein is about 180 degrees different than carbs and sugars. This means they have a correlation of -1.</li>
+<li>Beef products associate more strongly with protein than with the other nutrients (meats have high amounts of protein).</li>
+<li>Fiber, carbohydrates, and sugars tend to be more similar to each other than to protein. They are positively correlated.</li>
+<li>Protein is about 180 degrees different than carbohydrates and sugars. This means they have a correlation of -1.</li>
 <li>Fiber and fat have a correlation of 0 since they are about 90 degrees.</li>
 <li>Baked products are more similar to restaurant food than beef products based on these variables.</li>
 <li>Of the three clusters, beef products and baked products are the most different.</li>

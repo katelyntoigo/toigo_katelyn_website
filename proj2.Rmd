@@ -1,189 +1,98 @@
 ---
-title: "Regression Equation Comparison"
+title: "Spatial Data Visualization"
 description: |
-  Seawater Analysis
+  CA Oil Spill Analysis
 output: 
   distill::distill_article:
     code_folding: hide
 ---
 
-## Analysis of Seawater
+## Analysis of CA Oil Spill Incidents
 
 ### Overview
-This analysis will look at the relationship between oxygen saturation of seawater off California’s coast and several physical and chemical variables including oxygen saturation, water temperature, water salinity, water depth, phosphate concentration, and nitrite concentrations.
+This script uses R to conduct spatial data visualization of 2008 California oil spill incidents.
 
-Data citation: CalCOFI data are available for use without restriction. Data downloaded from https://calcofi.org/ccdata.html.  Accessed 1/10/2022.
+Two data layers are combined, a California county layer and a CA DFW oil spill incident tracking dataset. The oil spill dataset is a vector layer.
 
-```{r setup, include = TRUE, message = FALSE, warning = FALSE}
-knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+**Data citations:** 
+CA County layer dataset is provided in ESM244.
+
+Cal EMA and DFG-OSPR (2009). Oil Spill Incident Tracking [ds394]. https://map.dfg.ca.gov/metadata/ds0394.html
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+
+# Load necessary packages
 library(tidyverse)
 library(here)
-library(AICcmodavg)
-library(equatiomatic)
+library(broom)
+library(sf)
+library(tmap)
 ```
-
-### Read in the data
-```{r}
-seawater_samples <- read_csv(here('data', 'calcofi_seawater_samples.csv'))
-```
-
-### Clean the data
-```{r}
-seawater_clean <- seawater_samples %>% 
-  drop_na() %>% 
-  rename(temp = t_deg_c, # variables are renamed so they are easier to work with and understand
-         depth = depth_m,
-         phosphate = po4u_m,
-         nitrite = no2u_m)
-```
-
-### Create linear regression models using functions to store the equations
-Model 1 is oxygen saturation as a function of water temperature, salinity, and phosphate concentration.
-
-Model 2 is oxygen saturation as a function of water temperature, salinity, phosphate concentration, and depth.
-
-A third model has also been added. Model 3 is oxygen saturation as a function of water temperature, salinity, phosphate concentration, nitrite concentration, and depth.
 
 ```{r}
-f1 <- o2sat ~ temp + salinity + phosphate
-mdl1 <- lm(f1, data = seawater_clean)
+# Read in data and check/update projections
+# Read in the CA county data (TIGER shapefile):
+ca_counties_sf <- read_sf(here("data/counties"), layer = "CA_Counties_TIGER2016") %>% 
+  janitor::clean_names() %>% 
+  select(name)
 
-f2 <- o2sat ~ temp + salinity + phosphate + depth
-mdl2 <- lm(f2, data = seawater_clean)
+# Check the projection
+# st_crs(ca_counties_sf) # WGS 84 / Pseudo-Mercator, EPSG: 3857
 
-f3 <- o2sat ~ temp + salinity + phosphate + + nitrite + depth
-mdl3 <- lm(f3, data = seawater_clean)
+# Read in the oil spill incident layer: 
+oil_spill_sf <- read_sf(here("data/oil_spill_data"), layer = "ds394") %>% 
+  janitor::clean_names()
+
+# Check the projection:
+# st_crs(oil_spill_sf) # NAD83 / California Albers, EPSG: 3310
+
+# Make both have the same projection = NAD83 / California Albers, EPSG: 3310
+ca_counties_sf <- st_transform(ca_counties_sf, st_crs(oil_spill_sf))
 ```
-
-### Use AIC to compare the models
-AIC = Akaike Information Criterion
-
-Model with the lowest AIC is the preferred model. Ideally, the best model is lower than the next best model by at least 2.0. A difference of 2 indicates a significant difference in model fit.
 
 ```{r}
-AICc(mdl1) # AICc() corrects for sample size
-
-AICc(mdl2)
-
-AICc(mdl3)
-
-AICcmodavg::aictab(list(mdl1, mdl2, mdl3))
+### Plot the data for quick visualization
+# Make a quick ggplot:
+# ggplot() +
+#   geom_sf(data = ca_counties_sf) +
+#   geom_sf(data = oil_spill_sf)
 ```
 
-- AIC of model 1 = 619.0251
-
-- AIC of model 2 = 616.6048
-
-- AIC of model 3 = 613.5962
-
-- The AIC of model 1 > model 2 > model 3.
-
-- Model 3 is lower than model 2 by 3.01 and lower than model 1 by 5.43, so since it is lower by at least 2, model 3 is the preferred model.
-
-- Model 3 is the preferred model via the AIC method.
-
-
-### Use 10-fold cross validation to compare the models
-Root-mean-square error is the scoring method.
-
+### Interactive map in tmap showing the location of oil spill events
 ```{r}
-folds <- 10 # number of folds
-fold_vec <- rep(1:folds, length.out = nrow(seawater_clean)) # fold vector is repeating over each fold
-table(fold_vec)
+tmap_mode("view") # Allows one to drag the map and zoom in and out.
 
-set.seed(42) # allows others to get same set of random numbers if they try to replicate this work
-
-seawater_fold <- seawater_clean %>% 
-  mutate(group = sample(fold_vec, size = n(), replace = FALSE))
+tm_shape(oil_spill_sf) +
+  tm_dots("red")
 ```
 
-Create root-mean-square error function.
+**Figure 1.** Interactive overview of datapoints showing oil spill incidents in 2008.
 
+### Static choropleth map: fill color for each county depends on the count of inland oil spill events by county for the 2008 oil spill data
 ```{r}
-calc_rmse <- function(x, y) {
-  rmse_result <- (x-y)^2 %>% mean() %>% sqrt()
-  return(rmse_result)
-}
+# Join county dataset with oil dataset
+county_oil_sf <- ca_counties_sf %>% 
+  st_join(oil_spill_sf)
+
+#head(county_oil_sf)
+
+# Find counts of incidents per county
+oil_counts_sf <- county_oil_sf %>% 
+  filter(inlandmari == "Inland") %>% 
+  group_by(name) %>%
+  summarize(number = n()) # Do not want to just drop NA or else the county will disappear too - locations where id = NA will be replaced with 0. Count() would count every row, even those with NAs, so instead I will use group_by() and summarize().
+
+# head(oil_counts_sf)
+
+# Choropleth map
+ggplot(data = oil_counts_sf) + # pull data from oil_counts_sf
+  geom_sf(aes(fill = number), 
+          color = "black", 
+          size = 0.1) +
+  scale_fill_gradientn(colors = c("lightgray","orange","red")) + # set colors
+  theme_minimal() + # sets overall graph appearance
+  labs(fill = "Number of Oil Spill Incidents") # sets title of legend
 ```
 
-Calculate over all folds and take the average.
-
-```{r}
-rmse_df <- data.frame() # Create a blank data frame.
-
-# Below is a for loop - loops through all 10 folds.
-for(i in 1:folds) {
-  kfold_test_df <-seawater_fold %>% 
-    filter(group == i) # in group i
-  kfold_train_df <-seawater_fold %>% 
-    filter(group != i) # not in group i
-  
-  kfold_mdl1 <- lm(f1, data = kfold_train_df)
-  kfold_mdl2 <- lm(f2, data = kfold_train_df)
-  kfold_mdl3 <- lm(f3, data = kfold_train_df)
-  
-  kfold_pred_df <- kfold_test_df %>% 
-    mutate(mdl1 = predict(kfold_mdl1, kfold_test_df),
-           mdl2 = predict(kfold_mdl2, .), # the period is a shortcut that says you are predicting on the data frame
-           mdl3 = predict(kfold_mdl3, .)) 
-  kfold_rmse <- kfold_pred_df %>% 
-    summarize(rmse_mdl1 = calc_rmse(mdl1, o2sat),
-              rmse_mdl2 = calc_rmse(mdl2, o2sat),
-              rmse_mdl3 = calc_rmse(mdl3, o2sat))
-  
-  #Store the last chunk above by combining with the blank data frame from above.
-  rmse_df <- bind_rows(rmse_df, kfold_rmse)
-}
-
-rmse_df %>% 
-  summarize(mean_rmse_mdl1 = mean(rmse_mdl1),
-            mean_rmse_mdl2 = mean(rmse_mdl2),
-            mean_rmse_mdl3 = mean(rmse_mdl3))
-
-```
-
-- Model 1 RMSE = 4.976605
-
-- Model 2 RMSE = 4.876322
-
-- Model 3 RMSE = 4.795063
-
-- Model 3 has the lowest root-mean-square error meaning it has the lowest error when predicting data.
-
-- Model 3 is the preferred model via the k-fold cross validation method using RMSE scoring.
-
-
-**Both AIC and k-fold cross validation using root-mean-square error as the scoring method indicate model 3 to be the preferred model.**
-
-### The coefficients for the final predictive model are identified:
-
-```{r}
-final_mdl <- lm(f3, data = seawater_clean)
-summary(final_mdl)
-```
-
-### The final model:
-`r equatiomatic::extract_eq(final_mdl, wrap = TRUE)`
-
-
-Where:
-
-- o2sat = oxygen saturation
-
-- temp = water temperature in degrees Celsius
-
-- salinity = salinity of the water
-
-- phosphate = phosphate concentration in micro moles per liter
-
-- nitrite = nitrite concentration in micro moles per liter
-
-- depth = depth in meters
-
-
-### The final model with numbers:
-`r equatiomatic::extract_eq(final_mdl, wrap = TRUE, use_coefs = TRUE)`
- 
-
-
-
+**Figure 2.** Choropleth map showing the count of inland oil spill incidents in 2008.

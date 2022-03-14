@@ -9,7 +9,7 @@ description: |
 knitr::opts_chunk$set(echo = FALSE)
 ```
 
-### Interests
+### INTERESTS
 
 I am keenly interested in working with private landowners to restore and conserve their land and, ultimately, envision myself working for a land trust.
 
@@ -17,7 +17,7 @@ In my free time, you will find me hiking, cooking, painting, visiting national p
 
 
 
-### Education
+### EDUCATION
 
 **University of California, Santa Barbara** | Santa Barbara, CA
 
